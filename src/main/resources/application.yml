@@ -1,0 +1,14 @@
+spring:
+  datasource:
+    url:
+    username: root
+    password: test
+    schema-password:  test
+    schema-username:  root
+    schema: classpath:init.sql
+    data-username:  root
+    data-password:  test
+    data: classpath:data.sql
+    initialization-mode: embedded
+
+

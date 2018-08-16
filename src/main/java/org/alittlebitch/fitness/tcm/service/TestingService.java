@@ -28,12 +28,15 @@ public class TestingService {
     }
 
     public String submit(TcmRequest tcmRequest) {
+
         return null;
     }
 
     public void saveQuestion(TcmRequest tcmRequest) {
         if (Objects.isNull(tcmRequest))
             throw new IllegalArgumentException("参数不能为空");
-        testingDao.saveQuestion(tcmRequest.getQuestion(), tcmRequest.getSomatoType());
+        if (testingDao.saveQuestion(tcmRequest.getQuestion(), tcmRequest.getSomatoType()) != 1) {
+            throw new IllegalStateException("保存失败");
+        }
     }
 }

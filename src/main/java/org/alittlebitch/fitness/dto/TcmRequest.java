@@ -1,4 +1,4 @@
-package org.alittlebitch.fitness.tcm.request;
+package org.alittlebitch.fitness.dto;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -13,6 +13,7 @@ import java.util.List;
 @Getter
 @Setter
 public class TcmRequest {
+    private String question;
     private SomatoType somatoType;
     private List<Integer> score;
 }

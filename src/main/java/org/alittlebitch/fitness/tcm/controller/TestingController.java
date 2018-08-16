@@ -1,14 +1,12 @@
 package org.alittlebitch.fitness.tcm.controller;
 
+import org.alittlebitch.fitness.dto.TcmRequest;
 import org.alittlebitch.fitness.tcm.service.TestingService;
 import org.shoper.commons.responseentity.BaseResponse;
 import org.shoper.commons.responseentity.ResponseBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
 /**
@@ -31,8 +29,14 @@ public class TestingController {
         return Mono.justOrEmpty(ResponseBuilder.custom().data(testingService.question()).build());
     }
 
-    @PostMapping(value = "submit", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public Mono<BaseResponse> submit() {
-        return Mono.justOrEmpty(null);
+    @PostMapping(value = "/questions", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public Mono<BaseResponse> question(@RequestBody TcmRequest tcmRequest) {
+        testingService.saveQuestion(tcmRequest);
+        return Mono.justOrEmpty(ResponseBuilder.custom().data(tcmRequest).build());
+    }
+
+    @PostMapping(value = "/test", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public Mono<BaseResponse> submit(@RequestBody TcmRequest tcmRequest) {
+        return Mono.justOrEmpty(ResponseBuilder.custom().data(testingService.submit(tcmRequest)).build());
     }
 }

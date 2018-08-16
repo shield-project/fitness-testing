@@ -1,8 +1,11 @@
 package org.alittlebitch.fitness.tcm.bean;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 import org.alittlebitch.fitness.tcm.enums.SomatoType;
+
+import java.util.Date;
 
 /**
  * @author ShawnShoper
@@ -11,6 +14,9 @@ import org.alittlebitch.fitness.tcm.enums.SomatoType;
 @Getter
 @Setter
 public class Question {
-    private String title;
+    private Long id;
+    private String question;
     private SomatoType somatoType;
+    @JsonIgnore
+    private Date createTime;
 }

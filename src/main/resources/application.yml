@@ -1,17 +1,3 @@
 spring:
-  datasource:
-    url:  jdbc:mysql://119.27.167.18:3306/fitness-testing?useSSL=false&useUnicode=true&characterEncoding=utf8&autoReconnect=true&failOverReadOnly=false
-    username: " tVEulTGHwI2t06TpyDlZ6ww=="
-    password: " tZl/y/z4I2ynzu0ZIgq3CZg=="
-#    schema-password:  ${spring.datasource.username}
-#    schema-username:  ${spring.datasource.password}
-#    schema: classpath:init.sql
-#    data-username:  ${spring.datasource.username}
-#    data-password:  ${spring.datasource.password}
-    driver-class-name: com.mysql.jdbc.Driver
-#    data: classpath:data.sql
-#    initialization-mode:  embedded
-
-mybatis:
-  configuration:
-    map-underscore-to-camel-case: true
+  profiles:
+    active: prod

@@ -80,6 +80,22 @@
                     <fork>true</fork>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>2.0.4.RELEASE</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <fork>true</fork>
+                    <mainClass>org.alittlebitch.fitness.Application</mainClass>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 

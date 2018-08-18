@@ -14,5 +14,5 @@ import java.util.List;
 @Setter
 public class TcmResult {
     private SomatoType somatoType;
-    private List<Integer> score;
+    private List<Double> score;
 }

@@ -1,0 +1,17 @@
+spring:
+  datasource:
+    url: " tn435m9qibvJMJPln/hDPhaFkSV5dJxvFH3SkmLrxJZfYs8HtJV8qiRAynMjmgVfzpktG6zQMN4zjlYluVPB069UmzDB7lOfNqMVen3gxmEQ46abOPIZ9EQ1/iGPWNrRS4SWu0M52V5i4JsSZ6+qgmGBwJ89qKfoaBLxnV8oWYxjaJUz/sMNqAQ3WLcxDs2LDJYwXuo7glJo="
+    username: " tVEulTGHwI2t06TpyDlZ6ww=="
+    password: " tZl/y/z4I2ynzu0ZIgq3CZg=="
+    schema-password:  ${spring.datasource.username}
+    schema-username:  ${spring.datasource.password}
+    schema: classpath:testing_question_structure.sql
+    data-username:  ${spring.datasource.username}
+    data-password:  ${spring.datasource.password}
+    driver-class-name: com.mysql.jdbc.Driver
+    data: classpath:testing_question_data.sql
+#    initialization-mode:  embedded
+
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true

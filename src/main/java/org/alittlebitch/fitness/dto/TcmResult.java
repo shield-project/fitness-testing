@@ -1,18 +1,24 @@
 package org.alittlebitch.fitness.dto;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 import org.alittlebitch.fitness.tcm.enums.SomatoType;
-
-import java.util.List;
 
 /**
  * @author ShawnShoper
  * @date 2018/8/17 3:45
  */
-@Getter
-@Setter
+@Data
 public class TcmResult {
     private SomatoType somatoType;
-    private List<Double> score;
+    private Double score;
+    private boolean active = false;
+
+    public TcmResult() {
+    }
+
+    public TcmResult(SomatoType somatoType, Double score) {
+        this.somatoType = somatoType;
+        this.score = score;
+    }
+
 }

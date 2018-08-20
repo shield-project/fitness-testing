@@ -25,5 +25,6 @@ public class TcmRequest {
 
     //this field for testing score
     private List<TcmResult> tcmResult;
+    private UserInfo userInfo;
 
 }

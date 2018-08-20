@@ -1,11 +1,9 @@
 package org.alittlebitch.fitness.dto;
 
 import org.alittlebitch.fitness.tcm.bean.Question;
-import org.alittlebitch.fitness.tcm.enums.SomatoType;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * @author ShawnShoper
@@ -13,18 +11,23 @@ import java.util.stream.Collectors;
  */
 public class TcmQuestionBuilder {
 
-    public static List<TcmQuestionResp> create(List<Question> questions) {
-        Map<SomatoType, List<Question>> collect = questions.stream().collect(Collectors.groupingBy(Question::getSomatoType));
-        List<TcmQuestionResp> collect1 = collect.entrySet().stream().map(e -> create(e.getKey(), e.getValue())).collect(Collectors.toList());
+    public static List<TcmQuestion> create(List<Question> questions) {
+        List<TcmQuestion> tcmQuestionResps = new ArrayList<>(questions.size());
+        questions.forEach(e -> tcmQuestionResps.add(create(e)));
 //        collect.keySet().stream().map(e-> create(e, collect.get(e))).
-        return collect1;
+        return tcmQuestionResps;
     }
 
-    public static TcmQuestionResp create(SomatoType somatoType, List<Question> question) {
-        TcmQuestionResp tcmQuestionResp = new TcmQuestionResp();
-        tcmQuestionResp.setTypeName(somatoType.getTitle());
-        tcmQuestionResp.setQuestions(question);
-        tcmQuestionResp.setTypeValue(somatoType.name());
-        return tcmQuestionResp;
+    public static TcmQuestion create(Question question) {
+        TcmQuestion tcmQuestion = new TcmQuestion();
+        tcmQuestion.setTypeName(question.getSomatoType().getTitle());
+        tcmQuestion.setQuestion(question.getQuestion());
+        if (question.getSortType() == 0) {
+            tcmQuestion.setSortType("ASC");
+        } else {
+            tcmQuestion.setSortType("DESC");
+        }
+        tcmQuestion.setTypeValue(question.getSomatoType().name());
+        return tcmQuestion;
     }
 }

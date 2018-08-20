@@ -1,5 +1,6 @@
 package org.alittlebitch.fitness.tcm.controller;
 
+import org.alittlebitch.fitness.dto.TcmQuestionResp;
 import org.alittlebitch.fitness.dto.TcmRequest;
 import org.alittlebitch.fitness.tcm.service.TestingService;
 import org.shoper.commons.responseentity.BaseResponse;
@@ -26,7 +27,8 @@ public class TestingController {
 
     @GetMapping(value = "/questions", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public Mono<BaseResponse> question() {
-        return Mono.justOrEmpty(ResponseBuilder.custom().data(testingService.question()).build());
+        TcmQuestionResp question = testingService.question();
+        return Mono.justOrEmpty(ResponseBuilder.custom().data(question).build());
     }
 
     @PostMapping(value = "/questions", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)

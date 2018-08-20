@@ -19,4 +19,6 @@ public class Question {
     private SomatoType somatoType;
     @JsonIgnore
     private Date createTime;
+
+    private int sortType;
 }

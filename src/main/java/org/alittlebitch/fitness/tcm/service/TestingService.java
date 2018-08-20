@@ -2,6 +2,7 @@ package org.alittlebitch.fitness.tcm.service;
 
 import lombok.Data;
 import org.alittlebitch.fitness.dto.*;
+import org.alittlebitch.fitness.tcm.bean.ResultRecord;
 import org.alittlebitch.fitness.tcm.dao.TestingDao;
 import org.alittlebitch.fitness.tcm.enums.BiasedDetermination;
 import org.alittlebitch.fitness.tcm.enums.MildDetermination;
@@ -37,7 +38,7 @@ public class TestingService {
         return tcmQuestionResp;
     }
 
-    public Object submit(TcmRequest tcmRequest) {
+    public ResultRecordResp submit(TcmRequest tcmRequest) {
         List<TcmResult> tcmResults = tcmRequest.getTcmResult();
 
         UserInfo userInfo = tcmRequest.getUserInfo();
@@ -59,10 +60,10 @@ public class TestingService {
         mildMap.put(SomatoType.MILDPHYSICAL, null);
         Double mildScore = somatoTypeScoreMap.get(SomatoType.MILDPHYSICAL);
         //去除平和质属性
-        somatoTypeCountMap.remove(SomatoType.MILDPHYSICAL);
+        somatoTypeScoreMap.remove(SomatoType.MILDPHYSICAL);
         //提取出分数30-39的偏颇
         Map<SomatoType, BiasedDetermination> biasedMap = new HashMap<>();
-        somatoTypeCountMap.entrySet().forEach((e) -> {
+        somatoTypeScoreMap.entrySet().forEach((e) -> {
             if (e.getValue() < 30)
                 biasedMap.put(e.getKey(), BiasedDetermination.NO);
             else if (e.getValue() >= 30 && e.getValue() < 40)
@@ -77,12 +78,34 @@ public class TestingService {
         else
             mildMap.put(SomatoType.MILDPHYSICAL, MildDetermination.NO);
 
+        //构建result record
+        ResultRecord resultRecord = new ResultRecord();
+
         if (mildMap.get(SomatoType.MILDPHYSICAL) != MildDetermination.NO) {
             //主要体征为平和质
-
+            resultRecord.setMildDetermination(mildMap.get(SomatoType.MILDPHYSICAL));
         }
         //提取偏颇体质为
-        List<SomatoType> collect = biasedMap.entrySet().stream().filter(e -> e.getValue() != BiasedDetermination.NO).map(e -> e.getKey()).collect(Collectors.toList());
+        List<SomatoType> biaseds = biasedMap.entrySet().stream().filter(e -> e.getValue() != BiasedDetermination.NO).map(e -> e.getKey()).collect(Collectors.toList());
+        if (!biaseds.isEmpty()) {
+            List<Map.Entry<SomatoType, BiasedDetermination>> anyYesBiased = biasedMap.entrySet().stream()
+                    .filter(e -> e.getValue().equals(BiasedDetermination.NO)
+                    )
+                    .collect(Collectors.toList());
+            if (!anyYesBiased.isEmpty()) {
+                resultRecord.setBiasedDetermination(BiasedDetermination.YES);
+                resultRecord.setBiaseds(anyYesBiased.stream().map(Map.Entry::getKey).collect(Collectors.toList()));
+            } else {
+                List<Map.Entry<SomatoType, BiasedDetermination>> anyMaybeBiased = biasedMap.entrySet().stream()
+                        .filter(e -> e.getValue().equals(BiasedDetermination.MAYBE)
+                        )
+                        .collect(Collectors.toList());
+                if (!anyMaybeBiased.isEmpty()) {
+                    resultRecord.setBiasedDetermination(BiasedDetermination.MAYBE);
+                    resultRecord.setBiaseds(anyMaybeBiased.stream().map(Map.Entry::getKey).collect(Collectors.toList()));
+                }
+            }
+        }
 
 
         //solution A
@@ -120,9 +143,8 @@ public class TestingService {
 //        });
 
 
-        //判定平和质
-
-        return null;
+        resultRecord.setUserInfo(userInfo);
+        return ResultRecordRespBuild.create(resultRecord);
     }
 
     public void saveQuestion(TcmRequest tcmRequest) {

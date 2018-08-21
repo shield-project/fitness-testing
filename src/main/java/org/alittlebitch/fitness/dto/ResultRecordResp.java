@@ -3,8 +3,10 @@ package org.alittlebitch.fitness.dto;
 import lombok.Data;
 import org.alittlebitch.fitness.tcm.enums.BiasedDetermination;
 import org.alittlebitch.fitness.tcm.enums.MildDetermination;
+import org.alittlebitch.fitness.tcm.enums.SomatoType;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author ShawnShoper
@@ -17,7 +19,7 @@ public class ResultRecordResp {
     private BiasedDetermination biasedDetermination;
     private List<SomatoInfo> biaseds;
     private UserInfo userInfo;
-
+    private Map<SomatoType, Double> score;
     @Data
     static class SomatoInfo {
         private String name;

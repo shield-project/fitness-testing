@@ -10,6 +10,8 @@ spring:
     data-password:  ${spring.datasource.password}
     driver-class-name: com.mysql.jdbc.Driver
     data: classpath:testing_question_data.sql
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
 #    initialization-mode:  embedded
 
 mybatis:

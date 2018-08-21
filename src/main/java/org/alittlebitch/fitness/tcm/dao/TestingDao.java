@@ -2,7 +2,10 @@ package org.alittlebitch.fitness.tcm.dao;
 
 import org.alittlebitch.fitness.tcm.bean.Question;
 import org.alittlebitch.fitness.tcm.enums.SomatoType;
-import org.apache.ibatis.annotations.*;
+import org.apache.ibatis.annotations.Insert;
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
 
@@ -21,7 +24,6 @@ public interface TestingDao {
     @Insert("insert into testing_question (question,somato_type) values (#{question},#{somatoType})")
     int saveQuestion(@Param("question") String question, @Param("somatoType") SomatoType somatoType);
 
-    @Insert("insert into testing_score_record (yanginsufficiency,yindeficiency,faintphysical,phlegmdampness,dampnessheat,bloodstasis,tebing,qistagnation,mildphysical) VALUES (#{yanginsufficiency},#{yindeficiency},#{faintphysical},#{phlegmdampness},#{dampnessheat},#{bloodstasis},#{tebing},#{qistagnation},#{mildphysical});")
-    @Options(useGeneratedKeys = true)
-    Integer saveUserResult(double yanginsufficiency, double yindeficiency, double faintphysical, double phlegmdampness, double dampnessheat, double bloodstasis, double tebing, double qistagnation, double mildphysical);
+    @Insert("insert into testing_score_record (id,yanginsufficiency,yindeficiency,faintphysical,phlegmdampness,dampnessheat,bloodstasis,tebing,qistagnation,mildphysical) VALUES (#{id},#{yanginsufficiency},#{yindeficiency},#{faintphysical},#{phlegmdampness},#{dampnessheat},#{bloodstasis},#{tebing},#{qistagnation},#{mildphysical},#{name},#{phone},#{sex},#{age},#{address});")
+    Integer saveUserResult(@Param("yanginsufficiency") double yanginsufficiency, @Param("yindeficiency") double yindeficiency, @Param("faintphysical") double faintphysical, @Param("phlegmdampness") double phlegmdampness, @Param("dampnessheat") double dampnessheat, @Param("bloodstasis") double bloodstasis, @Param("tebing") double tebing, @Param("qistagnation") double qistagnation, @Param("mildphysical") double mildphysical, @Param("name") String name, @Param("phone") String phone, @Param("sex") String sex, @Param("age") int age, @Param("address") String address);
 }

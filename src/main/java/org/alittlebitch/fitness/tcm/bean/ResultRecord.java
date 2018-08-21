@@ -2,9 +2,6 @@ package org.alittlebitch.fitness.tcm.bean;
 
 import lombok.Data;
 import org.alittlebitch.fitness.dto.UserInfo;
-import org.alittlebitch.fitness.tcm.enums.BiasedDetermination;
-import org.alittlebitch.fitness.tcm.enums.MildDetermination;
-import org.alittlebitch.fitness.tcm.enums.SomatoType;
 
 import java.util.List;
 
@@ -14,9 +11,7 @@ import java.util.List;
  */
 @Data
 public class ResultRecord {
-    private int id;
-    private MildDetermination mildDetermination;
-    private BiasedDetermination biasedDetermination;
-    private List<SomatoType> biaseds;
+    private String id;
+    private List<SomatoInfo> testResult;
     private UserInfo userInfo;
 }

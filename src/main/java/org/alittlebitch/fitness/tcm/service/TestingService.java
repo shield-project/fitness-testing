@@ -1,6 +1,5 @@
 package org.alittlebitch.fitness.tcm.service;
 
-import lombok.Data;
 import org.alittlebitch.fitness.dto.*;
 import org.alittlebitch.fitness.tcm.bean.ResultRecord;
 import org.alittlebitch.fitness.tcm.bean.SomatoInfo;
@@ -9,9 +8,11 @@ import org.alittlebitch.fitness.tcm.enums.SomatoType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toList;
+import static org.alittlebitch.fitness.tcm.enums.SomatoType.*;
 
 /**
  * @author ShawnShoper
@@ -56,9 +57,9 @@ public class TestingService {
         somatoInfos.remove(mildPhysical);
         Map<String, Float> biasedMap = new HashMap<>();
         somatoInfos.stream().forEach(e -> biasedMap.put(e.getTypeName(), e.getPercent()));
-        List<String> gte30 = biasedMap.entrySet().stream().filter(e -> e.getValue() < 40 && e.getValue() >= 30).map(Map.Entry::getKey).collect(Collectors.toList());
-        List<String> lte30 = biasedMap.entrySet().stream().filter(e -> e.getValue() < 30).map(Map.Entry::getKey).collect(Collectors.toList());
-        List<String> gte40 = biasedMap.entrySet().stream().filter(e -> e.getValue() >= 40).map(Map.Entry::getKey).collect(Collectors.toList());
+        List<String> gte30 = biasedMap.entrySet().stream().filter(e -> e.getValue() < 40 && e.getValue() >= 30).map(Map.Entry::getKey).collect(toList());
+        List<String> lte30 = biasedMap.entrySet().stream().filter(e -> e.getValue() < 30).map(Map.Entry::getKey).collect(toList());
+        List<String> gte40 = biasedMap.entrySet().stream().filter(e -> e.getValue() >= 40).map(Map.Entry::getKey).collect(toList());
         if (!gte40.isEmpty()) {
             biasedMap.entrySet().stream().forEach(e -> {
                 if (e.getValue() >= 40) {
@@ -81,10 +82,14 @@ public class TestingService {
                 }
             });
         }
+        String id = UUID.randomUUID().toString();
         somatoInfos.add(mildPhysical);
+        Map<String, Float> score = new HashMap<>();
+        somatoInfos.stream().forEach(e -> score.put(e.getTypeValue(), e.getPercent()));
+        testingDao.saveUserResult(id, score.get(YANGINSUFFICIENCY.name()), score.get(YINDEFICIENCY.name()), score.get(FAINTPHYSICAL.name()), score.get(PHLEGMDAMPNESS.name()), score.get(DAMPNESSHEAT.name()), score.get(BLOODSTASIS.name()), score.get(TEBING.name()), score.get(QISTAGNATION.name()), score.get(MILDPHYSICAL.name()), userInfo.getName(), userInfo.getPhone(), userInfo.getSex(), userInfo.getAge(), userInfo.getAddress());
 //        resultRecord.setTestResult(somatoInfos);
 //        resultRecord.setUserInfo(userInfo);
-//        resultRecord.setId(UUID.randomUUID().toString());
+//        resultRecord.setId();
         //先提取平和质的属性
 //        Map<SomatoType, MildDetermination> mildMap = new HashMap<>();
 //        mildMap.put(SomatoType.MILDPHYSICAL, null);
@@ -176,7 +181,7 @@ public class TestingService {
 
 //        resultRecord.setUserInfo(userInfo);
 //        ResultRecordRespBuild.create(resultRecord);
-        return resultRecord;
+        return id;
     }
 
     public void saveQuestion(TcmRequest tcmRequest) {
@@ -187,16 +192,9 @@ public class TestingService {
         }
     }
 
-    @Data
-    class Item {
-        private String name;
-        private int age;
-        private BigDecimal score;
+    public Object result(String id) {
 
-        public Item(String name, int age, BigDecimal score) {
-            this.name = name;
-            this.age = age;
-            this.score = score;
-        }
+        return null;
     }
+
 }

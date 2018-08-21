@@ -41,4 +41,10 @@ public class TestingController {
     public Mono<BaseResponse> submit(@RequestBody TcmRequest tcmRequest) {
         return Mono.justOrEmpty(ResponseBuilder.custom().data(testingService.submit(tcmRequest)).build());
     }
+
+    @PostMapping(value = "result/{id}")
+    public Mono<BaseResponse> result(@PathVariable("id") String id) {
+        return Mono.justOrEmpty(ResponseBuilder.custom().data(testingService.result(id)).build());
+
+    }
 }

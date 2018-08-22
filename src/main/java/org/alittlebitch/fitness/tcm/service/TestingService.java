@@ -1,10 +1,14 @@
 package org.alittlebitch.fitness.tcm.service;
 
 import org.alittlebitch.fitness.dto.*;
+import org.alittlebitch.fitness.tcm.bean.Analysis;
 import org.alittlebitch.fitness.tcm.bean.ResultRecord;
 import org.alittlebitch.fitness.tcm.bean.SomatoInfo;
 import org.alittlebitch.fitness.tcm.dao.TestingDao;
+import org.alittlebitch.fitness.tcm.enums.Determination;
 import org.alittlebitch.fitness.tcm.enums.SomatoType;
+import org.shoper.commons.core.CloneUtil;
+import org.shoper.commons.core.SystemException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -49,95 +53,95 @@ public class TestingService {
             SomatoType key = e.getKey();
             Double value = e.getValue();
             Long count = somatoTypeCountMap.get(key);
-            float percent = (float) (100 * ((value - count) / (count * 4)));
+            Double percent = (100 * ((value - count) / (count * 4)));
             somatoInfos.add(new SomatoInfo(e.getKey().getTitle(), e.getKey().name(), percent));
         });
-        Optional<SomatoInfo> first = somatoInfos.stream().filter(e -> e.getTypeValue().equals(SomatoType.MILDPHYSICAL.name())).findFirst();
-        SomatoInfo mildPhysical = first.get();
-        somatoInfos.remove(mildPhysical);
-        Map<String, Float> biasedMap = new HashMap<>();
-        somatoInfos.stream().forEach(e -> biasedMap.put(e.getTypeName(), e.getPercent()));
-        List<String> gte30 = biasedMap.entrySet().stream().filter(e -> e.getValue() < 40 && e.getValue() >= 30).map(Map.Entry::getKey).collect(toList());
-        List<String> lte30 = biasedMap.entrySet().stream().filter(e -> e.getValue() < 30).map(Map.Entry::getKey).collect(toList());
-        List<String> gte40 = biasedMap.entrySet().stream().filter(e -> e.getValue() >= 40).map(Map.Entry::getKey).collect(toList());
-        if (!gte40.isEmpty()) {
-            biasedMap.entrySet().stream().forEach(e -> {
-                if (e.getValue() >= 40) {
-                    String key = e.getKey();
-                    somatoInfos.stream().filter(b -> b.getTypeName().equalsIgnoreCase(key)).forEach(c -> c.setActive(true));
-                }
-            });
-        } else {
-            if (!lte30.isEmpty() && mildPhysical.getPercent() >= 60)
-                mildPhysical.setActive(true);
-            else if (!gte30.isEmpty() && mildPhysical.getPercent() >= 60) {
-                mildPhysical.setActive(true);
-                gte30.stream().forEach(e -> somatoInfos.stream().filter(s -> s.getTypeName().equals(e)).forEach(b -> b.setActive(true)));
-            } else
-                mildPhysical.setActive(false);
-            biasedMap.entrySet().stream().forEach(e -> {
-                if (e.getValue() > 30) {
-                    String key = e.getKey();
-                    somatoInfos.stream().filter(b -> b.getTypeName().equals(key)).forEach(c -> c.setActive(true));
-                }
-            });
-        }
+//        Optional<SomatoInfo> first = somatoInfos.stream().filter(e -> e.getTypeValue().equals(SomatoType.MILDPHYSICAL.name())).findFirst();
+//        SomatoInfo mildPhysical = first.get();
+//        somatoInfos.remove(mildPhysical);
+//        Map<String, Float> biasedMap = new HashMap<>();
+//        somatoInfos.stream().forEach(e -> biasedMap.put(e.getTypeName(), e.getPercent()));
+//        List<String> gte30 = biasedMap.entrySet().stream().filter(e -> e.getValue() < 40 && e.getValue() >= 30).map(Map.Entry::getKey).collect(toList());
+//        List<String> lte30 = biasedMap.entrySet().stream().filter(e -> e.getValue() < 30).map(Map.Entry::getKey).collect(toList());
+//        List<String> gte40 = biasedMap.entrySet().stream().filter(e -> e.getValue() >= 40).map(Map.Entry::getKey).collect(toList());
+//        if (!gte40.isEmpty()) {
+//            biasedMap.entrySet().stream().forEach(e -> {
+//                if (e.getValue() >= 40) {
+//                    String key = e.getKey();
+//                    somatoInfos.stream().filter(b -> b.getTypeName().equalsIgnoreCase(key)).forEach(c -> c.setActive(true));
+//                }
+//            });
+//        } else {
+//            if (!lte30.isEmpty() && mildPhysical.getPercent() >= 60)
+//                mildPhysical.setActive(true);
+//            else if (!gte30.isEmpty() && mildPhysical.getPercent() >= 60) {
+//                mildPhysical.setActive(true);
+//                gte30.stream().forEach(e -> somatoInfos.stream().filter(s -> s.getTypeName().equals(e)).forEach(b -> b.setActive(true)));
+//            } else
+//                mildPhysical.setActive(false);
+//            biasedMap.entrySet().stream().forEach(e -> {
+//                if (e.getValue() > 30) {
+//                    String key = e.getKey();
+//                    somatoInfos.stream().filter(b -> b.getTypeName().equals(key)).forEach(c -> c.setActive(true));
+//                }
+//            });
+//        }
         String id = UUID.randomUUID().toString();
-        somatoInfos.add(mildPhysical);
-        Map<String, Float> score = new HashMap<>();
+//        somatoInfos.add(mildPhysical);
+        Map<String, Double> score = new HashMap<>();
         somatoInfos.stream().forEach(e -> score.put(e.getTypeValue(), e.getPercent()));
         testingDao.saveUserResult(id, score.get(YANGINSUFFICIENCY.name()), score.get(YINDEFICIENCY.name()), score.get(FAINTPHYSICAL.name()), score.get(PHLEGMDAMPNESS.name()), score.get(DAMPNESSHEAT.name()), score.get(BLOODSTASIS.name()), score.get(TEBING.name()), score.get(QISTAGNATION.name()), score.get(MILDPHYSICAL.name()), userInfo.getName(), userInfo.getPhone(), userInfo.getSex(), userInfo.getAge(), userInfo.getAddress());
 //        resultRecord.setTestResult(somatoInfos);
 //        resultRecord.setUserInfo(userInfo);
 //        resultRecord.setId();
         //先提取平和质的属性
-//        Map<SomatoType, MildDetermination> mildMap = new HashMap<>();
+//        Map<SomatoType, Determination> mildMap = new HashMap<>();
 //        mildMap.put(SomatoType.MILDPHYSICAL, null);
 //        Double mildScore = somatoTypeScoreMap.get(SomatoType.MILDPHYSICAL);
 //        //去除平和质属性
 //        Map<SomatoType, Double> map = CloneUtil.depthClone(somatoTypeScoreMap, Map.class);
 //        map.remove(SomatoType.MILDPHYSICAL);
 //        //提取出分数30-39的偏颇
-//        Map<SomatoType, BiasedDetermination> biasedMap = new HashMap<>();
+//        Map<SomatoType, Determination> biasedMap = new HashMap<>();
 //        map.entrySet().forEach((e) -> {
 //            if (e.getValue() < 30)
-//                biasedMap.put(e.getKey(), BiasedDetermination.NO);
+//                biasedMap.put(e.getKey(), Determination.NO);
 //            else if (e.getValue() >= 30 && e.getValue() < 40)
-//                biasedMap.put(e.getKey(), BiasedDetermination.MAYBE);
+//                biasedMap.put(e.getKey(), Determination.MAYBE);
 //            else
-//                biasedMap.put(e.getKey(), BiasedDetermination.YES);
+//                biasedMap.put(e.getKey(), Determination.YES);
 //        });
-//        if (mildScore >= 60 && biasedMap.values().contains(BiasedDetermination.NO))
-//            mildMap.put(SomatoType.MILDPHYSICAL, MildDetermination.YES);
-//        else if (mildScore >= 60 && biasedMap.values().contains(BiasedDetermination.YES))
-//            mildMap.put(SomatoType.MILDPHYSICAL, MildDetermination.MAYBE);
+//        if (mildScore >= 60 && biasedMap.values().contains(Determination.NO))
+//            mildMap.put(SomatoType.MILDPHYSICAL, Determination.YES);
+//        else if (mildScore >= 60 && biasedMap.values().contains(Determination.YES))
+//            mildMap.put(SomatoType.MILDPHYSICAL, Determination.MAYBE);
 //        else
-//            mildMap.put(SomatoType.MILDPHYSICAL, MildDetermination.NO);
+//            mildMap.put(SomatoType.MILDPHYSICAL, Determination.NO);
 //
 //        //构建result record
 //        ResultRecord resultRecord = new ResultRecord();
 //        resultRecord.setScore(somatoTypeScoreMap);
-//        if (mildMap.get(SomatoType.MILDPHYSICAL) != MildDetermination.NO) {
+//        if (mildMap.get(SomatoType.MILDPHYSICAL) != Determination.NO) {
 //            //主要体征为平和质
-//            resultRecord.setMildDetermination(mildMap.get(SomatoType.MILDPHYSICAL));
+//            resultRecord.setDetermination(mildMap.get(SomatoType.MILDPHYSICAL));
 //        }
         //提取偏颇体质为
-//        List<SomatoType> biaseds = biasedMap.entrySet().stream().filter(e -> e.getValue() != BiasedDetermination.NO).map(e -> e.getKey()).collect(Collectors.toList());
+//        List<SomatoType> biaseds = biasedMap.entrySet().stream().filter(e -> e.getValue() != Determination.NO).map(e -> e.getKey()).collect(Collectors.toList());
 //        if (!biaseds.isEmpty()) {
-//            List<Map.Entry<SomatoType, BiasedDetermination>> anyYesBiased = biasedMap.entrySet().stream()
-//                    .filter(e -> e.getValue().equals(BiasedDetermination.NO)
+//            List<Map.Entry<SomatoType, Determination>> anyYesBiased = biasedMap.entrySet().stream()
+//                    .filter(e -> e.getValue().equals(Determination.NO)
 //                    )
 //                    .collect(Collectors.toList());
 //            if (!anyYesBiased.isEmpty()) {
-//                resultRecord.setBiasedDetermination(BiasedDetermination.YES);
+//                resultRecord.setDetermination(Determination.YES);
 //                resultRecord.setBiaseds(anyYesBiased.stream().map(Map.Entry::getKey).collect(Collectors.toList()));
 //            } else {
-//                List<Map.Entry<SomatoType, BiasedDetermination>> anyMaybeBiased = biasedMap.entrySet().stream()
-//                        .filter(e -> e.getValue().equals(BiasedDetermination.MAYBE)
+//                List<Map.Entry<SomatoType, Determination>> anyMaybeBiased = biasedMap.entrySet().stream()
+//                        .filter(e -> e.getValue().equals(Determination.MAYBE)
 //                        )
 //                        .collect(Collectors.toList());
 //                if (!anyMaybeBiased.isEmpty()) {
-//                    resultRecord.setBiasedDetermination(BiasedDetermination.MAYBE);
+//                    resultRecord.setDetermination(Determination.MAYBE);
 //                    resultRecord.setBiaseds(anyMaybeBiased.stream().map(Map.Entry::getKey).collect(Collectors.toList()));
 //                }
 //            }
@@ -192,9 +196,187 @@ public class TestingService {
         }
     }
 
-    public Object result(String id) {
+    public Object result(String id) throws SystemException {
+        Map<String, Object> resultRecordMap = testingDao.queryResult(id);
+        ResultRecord resultRecord = new ResultRecord();
+        resultRecord.setId((String) resultRecordMap.get("id"));
+        UserInfo userInfo = new UserInfo();
+        userInfo.setAddress((String) resultRecordMap.get("address"));
+        userInfo.setAge((Integer) resultRecordMap.get("age"));
+        userInfo.setName((String) resultRecordMap.get("name"));
+        userInfo.setPhone((String) resultRecordMap.get("phone"));
+        userInfo.setSex((String) resultRecordMap.get("sex"));
+        Double yanginsufficiency = (Double) resultRecordMap.get("yanginsufficiency");
+        Double yindeficiency = (Double) resultRecordMap.get("yindeficiency");
+        Double faintphysical = (Double) resultRecordMap.get("faintphysical");
+        Double phlegmdampness = (Double) resultRecordMap.get("phlegmdampness");
+        Double dampnessheat = (Double) resultRecordMap.get("dampnessheat");
+        Double bloodstasis = (Double) resultRecordMap.get("bloodstasis");
+        Double tebing = (Double) resultRecordMap.get("tebing");
+        Double qistagnation = (Double) resultRecordMap.get("qistagnation");
+        Double mildphysical = (Double) resultRecordMap.get("mildphysical");
+        List<SomatoInfo> somatoInfos = new ArrayList<>(9);
+        somatoInfos.add(new SomatoInfo(YANGINSUFFICIENCY.getTitle(), YANGINSUFFICIENCY.name(), yanginsufficiency));
+        somatoInfos.add(new SomatoInfo(YINDEFICIENCY.getTitle(), YINDEFICIENCY.name(), yindeficiency));
+        somatoInfos.add(new SomatoInfo(FAINTPHYSICAL.getTitle(), FAINTPHYSICAL.name(), faintphysical));
+        somatoInfos.add(new SomatoInfo(PHLEGMDAMPNESS.getTitle(), PHLEGMDAMPNESS.name(), phlegmdampness));
+        somatoInfos.add(new SomatoInfo(DAMPNESSHEAT.getTitle(), DAMPNESSHEAT.name(), dampnessheat));
+        somatoInfos.add(new SomatoInfo(BLOODSTASIS.getTitle(), BLOODSTASIS.name(), bloodstasis));
+        somatoInfos.add(new SomatoInfo(TEBING.getTitle(), TEBING.name(), tebing));
+        somatoInfos.add(new SomatoInfo(QISTAGNATION.getTitle(), QISTAGNATION.name(), qistagnation));
+        somatoInfos.add(new SomatoInfo(MILDPHYSICAL.getTitle(), MILDPHYSICAL.name(), mildphysical));
 
-        return null;
+        {
+            Optional<SomatoInfo> first = somatoInfos.stream().filter(e -> e.getTypeValue().equals(SomatoType.MILDPHYSICAL.name())).findFirst();
+            SomatoInfo mildPhysical = first.get();
+            somatoInfos.remove(mildPhysical);
+            Map<String, Double> biasedMap = new HashMap<>();
+            somatoInfos.stream().forEach(e -> biasedMap.put(e.getTypeName(), e.getPercent()));
+            List<String> gte30 = biasedMap.entrySet().stream().filter(e -> e.getValue() < 40 && e.getValue() >= 30).map(Map.Entry::getKey).collect(toList());
+            List<String> lte30 = biasedMap.entrySet().stream().filter(e -> e.getValue() < 30).map(Map.Entry::getKey).collect(toList());
+            List<String> gte40 = biasedMap.entrySet().stream().filter(e -> e.getValue() >= 40).map(Map.Entry::getKey).collect(toList());
+            if (!gte40.isEmpty()) {
+                biasedMap.entrySet().stream().forEach(e -> {
+                    if (e.getValue() >= 40) {
+                        String key = e.getKey();
+                        somatoInfos.stream().filter(b -> b.getTypeName().equalsIgnoreCase(key)).forEach(c -> c.setActive(true));
+                    }
+                });
+            } else {
+                if (!lte30.isEmpty() && mildPhysical.getPercent() >= 60)
+                    mildPhysical.setActive(true);
+                else if (!gte30.isEmpty() && mildPhysical.getPercent() >= 60) {
+                    mildPhysical.setActive(true);
+                    gte30.stream().forEach(e -> somatoInfos.stream().filter(s -> s.getTypeName().equals(e)).forEach(b -> b.setActive(true)));
+                } else
+                    mildPhysical.setActive(false);
+                biasedMap.entrySet().stream().forEach(e -> {
+                    if (e.getValue() > 30) {
+                        String key = e.getKey();
+                        somatoInfos.stream().filter(b -> b.getTypeName().equals(key)).forEach(c -> c.setActive(true));
+                    }
+                });
+            }
+            somatoInfos.add(mildPhysical);
+        }
+
+
+        resultRecord.setTestResult(somatoInfos);
+        resultRecord.setUserInfo(userInfo);
+
+        Map<SomatoType, Double> somatoTypeFloatMap = new HashMap<>();
+        somatoInfos.stream().forEach(e -> somatoTypeFloatMap.put(SomatoType.valueOf(e.getTypeValue()), e.getPercent()));
+
+        //查询解读
+        somatoTypeFloatMap.remove(SomatoType.MILDPHYSICAL);
+        Map<SomatoType, Double> biasedMap = CloneUtil.depthClone(somatoTypeFloatMap, Map.class);
+
+        Map<SomatoType, Determination> determinationDeter = new HashMap<>();
+        List<SomatoType> gte30 = biasedMap.entrySet().stream().filter(e -> e.getValue() < 40 && e.getValue() >= 30).map(Map.Entry::getKey).collect(toList());
+        List<SomatoType> lte30 = biasedMap.entrySet().stream().filter(e -> e.getValue() < 30).map(Map.Entry::getKey).collect(toList());
+        List<SomatoType> gte40 = biasedMap.entrySet().stream().filter(e -> e.getValue() >= 40).map(Map.Entry::getKey).collect(toList());
+        if (!gte40.isEmpty()) {
+            biasedMap.entrySet().stream().forEach(e -> {
+                if (gte40.contains(e.getKey())) {
+                    SomatoType key = e.getKey();
+                    somatoInfos.stream().filter(b -> b.getTypeValue().equals(key.name())).forEach(c -> determinationDeter.put(SomatoType.valueOf(c.getTypeValue()), Determination.YES));
+                }
+            });
+            determinationDeter.put(SomatoType.MILDPHYSICAL, Determination.NO);
+        } else {
+            if (!lte30.isEmpty() && somatoTypeFloatMap.get(SomatoType.MILDPHYSICAL) >= 60)
+                determinationDeter.put(SomatoType.MILDPHYSICAL, Determination.YES);
+            else if (!gte30.isEmpty() && somatoTypeFloatMap.get(SomatoType.MILDPHYSICAL) >= 60) {
+                determinationDeter.put(SomatoType.MILDPHYSICAL, Determination.MAYBE);
+                gte30.stream().forEach(e -> somatoInfos.stream().filter(s -> s.getTypeName().equals(e)).forEach(b -> determinationDeter.put(SomatoType.valueOf(b.getTypeValue()), Determination.MAYBE)));
+            } else
+                determinationDeter.put(SomatoType.MILDPHYSICAL, Determination.NO);
+        }
+        biasedMap.entrySet().stream().forEach(e -> {
+            if (!determinationDeter.containsKey(e.getKey())) {
+                determinationDeter.put(e.getKey(), Determination.NO);
+            }
+        });
+
+        //查询数据库所有数据进行内存运算
+        List<Analysis> analyses = testingDao.queryAllAnalysis();
+//        analyses.get(0).getBloodstasis()
+        Optional<String> anyAnalysis = analyses.stream().map(b -> {
+            boolean mildphysicalFlag = false;
+            {
+                Determination determination = determinationDeter.get(SomatoType.MILDPHYSICAL);
+                mildphysicalFlag = judge(b, determination);
+            }
+            boolean yanginsufficiencyFlag = false;
+            {
+                Determination determination = determinationDeter.get(SomatoType.YANGINSUFFICIENCY);
+                yanginsufficiencyFlag = judge(b, determination);
+            }
+            boolean bloodstasisFlag = false;
+            {
+                Determination determination = determinationDeter.get(SomatoType.BLOODSTASIS);
+                bloodstasisFlag = judge(b, determination);
+            }
+            boolean dampnessheatFlag = false;
+            {
+                Determination determination = determinationDeter.get(SomatoType.DAMPNESSHEAT);
+                dampnessheatFlag = judge(b, determination);
+            }
+            boolean faintphysicalFlag = false;
+            {
+                Determination determination = determinationDeter.get(SomatoType.FAINTPHYSICAL);
+                faintphysicalFlag = judge(b, determination);
+            }
+            boolean phlegmdampnessFlag = false;
+            {
+                Determination determination = determinationDeter.get(SomatoType.PHLEGMDAMPNESS);
+                phlegmdampnessFlag = judge(b, determination);
+            }
+            boolean qistagnationFlag = false;
+            {
+                Determination determination = determinationDeter.get(SomatoType.QISTAGNATION);
+                qistagnationFlag = judge(b, determination);
+            }
+            boolean tebingFlag = false;
+            {
+                Determination determination = determinationDeter.get(SomatoType.TEBING);
+                tebingFlag = judge(b, determination);
+            }
+            boolean yindeficiencyFlag = false;
+            {
+                Determination determination = determinationDeter.get(SomatoType.YINDEFICIENCY);
+                yindeficiencyFlag = judge(b, determination);
+            }
+            if (mildphysicalFlag && yanginsufficiencyFlag && bloodstasisFlag && dampnessheatFlag && faintphysicalFlag && phlegmdampnessFlag && qistagnationFlag && tebingFlag && yindeficiencyFlag)
+                return b.getAnalysis();
+            else return null;
+        }).filter(Objects::nonNull).findAny();
+        if (anyAnalysis.isPresent()) {
+            //找到合适的解读
+            resultRecord.setUnscrambleContent(anyAnalysis.get());
+        } else {
+            //未找到合适的解读
+            resultRecord.setUnscrambleContent("暂无匹配的数据,请等待专家提供！");
+            //储存无法匹配的相应数据
+            testingDao.saveUnAnalysisData();
+        }
+
+        return resultRecord;
     }
 
+    private boolean judge(Analysis b, Determination determination) {
+        boolean flag = false;
+        if (Determination.YES.equals(determination)) {
+            if (determination.equals(b.getBloodstasis())) {
+                flag = true;
+            } else if (Determination.MAYBE.equals(b.getBloodstasis())) {
+                flag = true;
+            }
+        } else if (Determination.MAYBE.equals(determination)) {
+            if (Determination.MAYBE.equals(b.getBloodstasis())) flag = true;
+        } else {
+            if (Determination.NO.equals(b.getBloodstasis())) flag = true;
+        }
+        return flag;
+    }
 }

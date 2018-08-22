@@ -3,6 +3,7 @@ package org.alittlebitch.fitness.tcm.controller;
 import org.alittlebitch.fitness.dto.TcmQuestionResp;
 import org.alittlebitch.fitness.dto.TcmRequest;
 import org.alittlebitch.fitness.tcm.service.TestingService;
+import org.shoper.commons.core.SystemException;
 import org.shoper.commons.responseentity.BaseResponse;
 import org.shoper.commons.responseentity.ResponseBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,9 +43,8 @@ public class TestingController {
         return Mono.justOrEmpty(ResponseBuilder.custom().data(testingService.submit(tcmRequest)).build());
     }
 
-    @PostMapping(value = "result/{id}")
-    public Mono<BaseResponse> result(@PathVariable("id") String id) {
+    @PostMapping(value = "/result/{id}")
+    public Mono<BaseResponse> result(@PathVariable("id") String id) throws SystemException {
         return Mono.justOrEmpty(ResponseBuilder.custom().data(testingService.result(id)).build());
-
     }
 }

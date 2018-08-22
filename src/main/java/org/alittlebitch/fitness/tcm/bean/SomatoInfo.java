@@ -11,9 +11,9 @@ public class SomatoInfo {
     private String typeName;
     private String typeValue;
     private boolean active;
-    private float percent;
+    private Double percent;
 
-    public SomatoInfo(String typeName, String typeValue, float percent) {
+    public SomatoInfo(String typeName, String typeValue, Double percent) {
         this.typeName = typeName;
         this.typeValue = typeValue;
         this.percent = percent;

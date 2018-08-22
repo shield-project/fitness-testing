@@ -4,14 +4,14 @@ import lombok.Getter;
 
 /**
  * @author ShawnShoper
- * @date 2018/8/19 21:26
+ * @date 2018/8/19 21:27
  */
 @Getter
-public enum MildDetermination {
-    YES("是"), MAYBE("基本是"), NO("否");
+public enum Determination {
+    YES("是"), MAYBE("倾向是"), NO("否");
     private String name;
 
-    MildDetermination(String name) {
+    Determination(String name) {
         this.name = name;
     }
 }

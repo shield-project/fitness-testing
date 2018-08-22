@@ -14,4 +14,5 @@ public class ResultRecord {
     private String id;
     private List<SomatoInfo> testResult;
     private UserInfo userInfo;
+    private String unscrambleContent;
 }

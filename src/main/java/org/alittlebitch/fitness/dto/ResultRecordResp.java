@@ -2,7 +2,6 @@ package org.alittlebitch.fitness.dto;
 
 import lombok.Data;
 import org.alittlebitch.fitness.tcm.enums.BiasedDetermination;
-import org.alittlebitch.fitness.tcm.enums.MildDetermination;
 import org.alittlebitch.fitness.tcm.enums.SomatoType;
 
 import java.util.List;

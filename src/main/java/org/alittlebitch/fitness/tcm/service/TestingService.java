@@ -8,6 +8,7 @@ import org.alittlebitch.fitness.tcm.dao.TestingDao;
 import org.alittlebitch.fitness.tcm.enums.Determination;
 import org.alittlebitch.fitness.tcm.enums.SomatoType;
 import org.shoper.commons.core.CloneUtil;
+import org.shoper.commons.core.StringUtil;
 import org.shoper.commons.core.SystemException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -358,7 +359,7 @@ public class TestingService {
             //未找到合适的解读
             resultRecord.setUnscrambleContent("暂无匹配的数据,请等待专家提供！");
             //储存无法匹配的相应数据
-            testingDao.saveUnAnalysisData();
+            testingDao.saveUnAnalysisData(determinationDeter.get(YANGINSUFFICIENCY), determinationDeter.get(YINDEFICIENCY), determinationDeter.get(FAINTPHYSICAL), determinationDeter.get(PHLEGMDAMPNESS), determinationDeter.get(DAMPNESSHEAT), determinationDeter.get(BLOODSTASIS), determinationDeter.get(TEBING), determinationDeter.get(QISTAGNATION), determinationDeter.get(MILDPHYSICAL));
         }
 
         return resultRecord;
@@ -378,5 +379,55 @@ public class TestingService {
             if (Determination.NO.equals(b.getBloodstasis())) flag = true;
         }
         return flag;
+    }
+
+    public List<Analysis> getUnscramble(String name, int page, int pageSize) {
+        if (page == 0)
+            page = 1;
+        if (pageSize == 0 || pageSize > 50)
+            pageSize = 10;
+        StringBuilder sql = new StringBuilder();
+        sql.append("select * from testing_analysis ");
+        if (!StringUtil.isEmpty(name))
+            sql.append("where name like '%" + name + "%' ");
+        sql.append("limit " + (page - 1) * pageSize + "," + pageSize);
+
+        List<Analysis> list = testingDao.getAnalysis(sql.toString());
+        return list;
+    }
+
+    public void addUnscramble(UnscrambleRequest unscrambleRequest) {
+        if (Objects.isNull(unscrambleRequest) || StringUtil.isEmpty(unscrambleRequest.getUnscrambleName()))
+            throw new RuntimeException("参数不能为null");
+        if (testingDao.existsUnscramble(unscrambleRequest.getUnscrambleName()) != 0)
+            throw new RuntimeException("名字重复");
+        Map<SomatoType, Determination> map = new HashMap();
+        unscrambleRequest.getAdapterPhysique().forEach(e -> map.put(e.getSomatoType(), e.getIsAccord()));
+        if (testingDao.saveUnscramble(unscrambleRequest.getUnscrambleName(),
+                map.get(YANGINSUFFICIENCY),
+                map.get(YINDEFICIENCY),
+                map.get(FAINTPHYSICAL),
+                map.get(PHLEGMDAMPNESS),
+                map.get(DAMPNESSHEAT),
+                map.get(BLOODSTASIS),
+                map.get(TEBING),
+                map.get(QISTAGNATION),
+                map.get(MILDPHYSICAL)
+        ) != 1) {
+            throw new RuntimeException("添加解读失败");
+        }
+    }
+
+    public void deleteUnscramble(int id) {
+        if (testingDao.deleteUnscramble(id) != 1)
+            throw new RuntimeException("删除失败");
+    }
+
+    public List<Analysis> getUnanalysis(int page, int pageSize) {
+        if (page == 0)
+            page = 1;
+        if (pageSize == 0 || pageSize > 50)
+            pageSize = 10;
+        return testingDao.getUnanalysis((page - 1) * pageSize, pageSize);
     }
 }

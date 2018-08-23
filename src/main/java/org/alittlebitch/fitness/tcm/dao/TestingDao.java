@@ -2,11 +2,9 @@ package org.alittlebitch.fitness.tcm.dao;
 
 import org.alittlebitch.fitness.tcm.bean.Analysis;
 import org.alittlebitch.fitness.tcm.bean.Question;
+import org.alittlebitch.fitness.tcm.enums.Determination;
 import org.alittlebitch.fitness.tcm.enums.SomatoType;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 import java.util.Map;
@@ -35,6 +33,21 @@ public interface TestingDao {
     @Select("select * from testing_analysis")
     List<Analysis> queryAllAnalysis();
 
-    //    @Insert("insert into ")
-    int saveUnAnalysisData();
+    @Insert("insert into (yanginsufficiency,yindeficiency,faintphysical,phlegmdampness,dampnessheat,bloodstasis,tebing,qistagnation,mildphysical) values (#{yanginsufficiency},#{yindeficiency},#{faintphysical},#{phlegmdampness},#{dampnessheat},#{bloodstasis},#{tebing},#{qistagnation},#{mildphysical})")
+    int saveUnAnalysisData(@Param("yanginsufficiency") Determination yanginsufficiency, @Param("yindeficiency") Determination yindeficiency, @Param("faintphysical") Determination faintphysical, @Param("phlegmdampness") Determination phlegmdampness, @Param("dampnessheat") Determination dampnessheat, @Param("bloodstasis") Determination bloodstasis, @Param("tebing") Determination tebing, @Param("qistagnation") Determination qistagnation, @Param("mildphysical") Determination mildphysical);
+
+    @Select("${sql}")
+    List<Analysis> getAnalysis(@Param("sql") String sql);
+
+    @Select("select count(1) from testing_analysis where name = #{unscrambleName}")
+    int existsUnscramble(@Param("unscrambleName") String unscrambleName);
+
+    @Insert("insert into (name,yanginsufficiency,yindeficiency,faintphysical,phlegmdampness,dampnessheat,bloodstasis,tebing,qistagnation,mildphysical) values (#{name},#{yanginsufficiency},#{yindeficiency},#{faintphysical},#{phlegmdampness},#{dampnessheat},#{bloodstasis},#{tebing},#{qistagnation},#{mildphysical})")
+    int saveUnscramble(@Param("name") String name, @Param("yanginsufficiency") Determination yanginsufficiency, @Param("yindeficiency") Determination yindeficiency, @Param("faintphysical") Determination faintphysical, @Param("phlegmdampness") Determination phlegmdampness, @Param("dampnessheat") Determination dampnessheat, @Param("bloodstasis") Determination bloodstasis, @Param("tebing") Determination tebing, @Param("qistagnation") Determination qistagnation, @Param("mildphysical") Determination mildphysical);
+
+    @Delete("delete from testing_analysis where id = #{id}")
+    int deleteUnscramble(@Param("id") int id);
+
+    @Select("select * from testing_unanalysis limit #{offset},#{pageSize}")
+    List<Analysis> getUnanalysis(@Param("offset") int offset, @Param("pageSize") int pageSize);
 }

@@ -10,6 +10,7 @@ import org.alittlebitch.fitness.tcm.enums.Determination;
 @Data
 public class Analysis {
     private int id;
+    private String name;
     private Determination yanginsufficiency, yindeficiency, faintphysical, phlegmdampness, dampnessheat, bloodstasis, tebing, qistagnation, mildphysical;
     private String analysis;
 }

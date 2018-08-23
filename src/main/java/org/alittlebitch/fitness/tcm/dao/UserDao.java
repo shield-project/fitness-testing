@@ -14,7 +14,7 @@ public interface UserDao {
     @Select("select username,password,name from testing_user where username=#{username} and password = #{password};")
     User selectUserCount(@Param("username") String username, @Param("password") String pwd);
 
-    @Update("update testing_user set pwd = #{password} where username = #{username}")
+    @Update("update testing_user set password = #{password} where username = #{username}")
     int changePwd(@Param("username") String username, @Param("password") String pwd);
 
     @Insert("insert into testing_user (username,password,name) values (#{username},#{password},#{name})")
@@ -25,4 +25,7 @@ public interface UserDao {
 
     @Select("${sql}")
     List<User> list(@Param("sql") String sql);
+
+    @Select("select count(0) from testing_user where name like '%${name}%'")
+    int count(@Param("name") String name);
 }

@@ -42,12 +42,31 @@ public interface TestingDao {
     @Select("select count(1) from testing_analysis where name = #{unscrambleName}")
     int existsUnscramble(@Param("unscrambleName") String unscrambleName);
 
-    @Insert("insert into (name,yanginsufficiency,yindeficiency,faintphysical,phlegmdampness,dampnessheat,bloodstasis,tebing,qistagnation,mildphysical) values (#{name},#{yanginsufficiency},#{yindeficiency},#{faintphysical},#{phlegmdampness},#{dampnessheat},#{bloodstasis},#{tebing},#{qistagnation},#{mildphysical})")
-    int saveUnscramble(@Param("name") String name, @Param("yanginsufficiency") Determination yanginsufficiency, @Param("yindeficiency") Determination yindeficiency, @Param("faintphysical") Determination faintphysical, @Param("phlegmdampness") Determination phlegmdampness, @Param("dampnessheat") Determination dampnessheat, @Param("bloodstasis") Determination bloodstasis, @Param("tebing") Determination tebing, @Param("qistagnation") Determination qistagnation, @Param("mildphysical") Determination mildphysical);
+    @Insert("insert into testing_analysis (name,analysis,yanginsufficiency,yindeficiency,faintphysical,phlegmdampness,dampnessheat,bloodstasis,tebing,qistagnation,mildphysical) values (#{name},#{analysis},#{yanginsufficiency},#{yindeficiency},#{faintphysical},#{phlegmdampness},#{dampnessheat},#{bloodstasis},#{tebing},#{qistagnation},#{mildphysical})")
+    int saveUnscramble(@Param("name") String name, @Param("analysis") String analysis, @Param("yanginsufficiency") Determination yanginsufficiency, @Param("yindeficiency") Determination yindeficiency, @Param("faintphysical") Determination faintphysical, @Param("phlegmdampness") Determination phlegmdampness, @Param("dampnessheat") Determination dampnessheat, @Param("bloodstasis") Determination bloodstasis, @Param("tebing") Determination tebing, @Param("qistagnation") Determination qistagnation, @Param("mildphysical") Determination mildphysical);
 
     @Delete("delete from testing_analysis where id = #{id}")
     int deleteUnscramble(@Param("id") int id);
 
     @Select("select * from testing_unanalysis limit #{offset},#{pageSize}")
     List<Analysis> getUnanalysis(@Param("offset") int offset, @Param("pageSize") int pageSize);
+
+    @Select("select count(0) from testing_analysis where name like '%${unscrambleName}%'")
+    int countUnscramble(@Param("unscrambleName") String name);
+
+    @Select("select * from testing_analysis where id = #{unscrambleId}")
+    Analysis existsUnscrambleById(@Param("unscrambleId") int id);
+
+    @Update("update testing_analysis set analysis = #{analysis}, name = #{name},yanginsufficiency= #{yanginsufficiency},yindeficiency=#{yindeficiency},faintphysical=#{faintphysical},phlegmdampness=#{phlegmdampness},dampnessheat=#{dampnessheat},bloodstasis=#{bloodstasis},tebing=#{tebing},qistagnation=#{qistagnation},mildphysical=#{mildphysical} where id =#{uid}")
+    int updateUnscramble(@Param("uid") int id, @Param("name") String name,
+                         @Param("analysis") String analysis,
+                         @Param("yanginsufficiency") Determination yanginsufficiency,
+                         @Param("yindeficiency") Determination yindeficiency,
+                         @Param("faintphysical") Determination faintphysical,
+                         @Param("phlegmdampness") Determination phlegmdampness,
+                         @Param("dampnessheat") Determination dampnessheat,
+                         @Param("bloodstasis") Determination bloodstasis,
+                         @Param("tebing") Determination tebing,
+                         @Param("qistagnation") Determination qistagnation,
+                         @Param("mildphysical") Determination mildphysical);
 }

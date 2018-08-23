@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import reactor.core.publisher.Mono;
-import reactor.ipc.netty.http.server.HttpServerRequest;
+
+import javax.servlet.http.HttpServletRequest;
 
 import static org.alittlebitch.fitness.tcm.service.UserToken.check;
 
@@ -24,28 +24,27 @@ public class UserContoller {
     UserService userService;
 
     @PostMapping("/login")
-    private Mono<BaseResponse> login(String username, String password, HttpServerRequest req) throws IllegalAccessException {
-        check(req);
-        return Mono.justOrEmpty(ResponseBuilder.custom().data(userService.login(username, password)).build());
+    private BaseResponse login(String username, String password) {
+        return ResponseBuilder.custom().data(userService.login(username, password)).build();
     }
 
     @PostMapping("/changePwd")
-    private Mono<BaseResponse> changePwd(String username, String password, HttpServerRequest req) throws IllegalAccessException {
+    private BaseResponse changePwd(String username, String password, HttpServletRequest req) throws IllegalAccessException {
         check(req);
         userService.changePwd(username, password);
-        return Mono.justOrEmpty(ResponseBuilder.custom().build());
+        return ResponseBuilder.custom().build();
     }
 
-    @PostMapping("/add")
-    private Mono<BaseResponse> addUser(String username, String password, String name, HttpServerRequest req) throws IllegalAccessException {
+    @PostMapping("/user")
+    private BaseResponse addUser(String username, String password, String name, HttpServletRequest req) throws IllegalAccessException {
         check(req);
         userService.addUser(username, password, name);
-        return Mono.justOrEmpty(ResponseBuilder.custom().build());
+        return ResponseBuilder.custom().build();
     }
 
     @GetMapping("/users")
-    private Mono<BaseResponse> users(String userName, int page, int pageSize, HttpServerRequest req) throws IllegalAccessException {
+    private BaseResponse users(String name, int page, int pageSize, HttpServletRequest req) throws IllegalAccessException {
         check(req);
-        return Mono.justOrEmpty(ResponseBuilder.custom().data(userService.users(userName, page, pageSize)).build());
+        return ResponseBuilder.custom().data(userService.users(name, page, pageSize)).totalCount(userService.count(name)).pageSize(pageSize).currPage(page).build();
     }
 }

@@ -1,13 +1,11 @@
 package org.alittlebitch.fitness.tcm.service;
 
-import io.netty.handler.codec.http.cookie.Cookie;
 import org.alittlebitch.fitness.tcm.bean.User;
 import org.shoper.commons.core.MD5Util;
-import reactor.ipc.netty.http.server.HttpServerRequest;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * @author ShawnShoper
@@ -24,16 +22,8 @@ public class UserToken {
         return md5Code;
     }
 
-    public static void check(HttpServerRequest request) throws IllegalAccessException {
-        boolean flag = false;
-        if (request.cookies().containsKey(TOKEN)) {
-            Set<Cookie> cookies = request.cookies().get(TOKEN);
-            if (!cookies.isEmpty()) {
-                String value = cookies.iterator().next().value();
-                if (userToken.containsKey(value)) flag = true;
-            }
-        }
-        if (!flag) throw new IllegalAccessException("无权限");
+    public static void check(HttpServletRequest request) throws IllegalAccessException {
+        String header = request.getHeader(TOKEN);
+        if (!userToken.containsKey(header)) throw new IllegalAccessException("无权限");
     }
-
 }

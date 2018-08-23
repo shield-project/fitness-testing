@@ -28,6 +28,7 @@ public class UserService {
         String token = UserToken.login(user);
         LoginUser loginUser = new LoginUser();
         loginUser.setToken(token);
+        user.setPassword(user.getPassword().replaceAll(".", "*"));
         loginUser.setUser(user);
         return loginUser;
 
@@ -49,18 +50,22 @@ public class UserService {
             userDao.addUser(username, password, name);
     }
 
-    public List<User> users(String userName, int page, int pageSize) {
+    public List<User> users(String name, int page, int pageSize) {
         if (page == 0)
             page = 1;
         if (pageSize == 0 || pageSize > 50)
             pageSize = 10;
         StringBuilder sql = new StringBuilder();
-        sql.append("select username,name from testing_user ");
-        if (!StringUtil.isEmpty(userName))
-            sql.append("where username like '%" + userName + "%' ");
+        sql.append("select id,username,name from testing_user ");
+        if (!StringUtil.isEmpty(name))
+            sql.append("where name like '%" + name + "%' ");
         sql.append("limit " + (page - 1) * pageSize + "," + pageSize);
 
         List<User> list = userDao.list(sql.toString());
         return list;
+    }
+
+    public int count(String name) {
+        return userDao.count(name);
     }
 }

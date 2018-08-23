@@ -13,4 +13,5 @@ public class UnscrambleRequest {
     private int id;
     private String unscrambleName;
     private List<UnscrambleInfo> adapterPhysique;
+    private String unscrambleContent;
 }

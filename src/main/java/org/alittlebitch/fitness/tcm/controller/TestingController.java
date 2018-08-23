@@ -10,8 +10,8 @@ import org.shoper.commons.responseentity.ResponseBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
-import reactor.core.publisher.Mono;
-import reactor.ipc.netty.http.server.HttpServerRequest;
+
+import javax.servlet.http.HttpServletRequest;
 
 import static org.alittlebitch.fitness.tcm.service.UserToken.check;
 
@@ -26,55 +26,66 @@ public class TestingController {
     TestingService testingService;
 
     @PostMapping(value = "/testCount", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public Mono<BaseResponse> testCount() {
-        return Mono.justOrEmpty(ResponseBuilder.custom().data(testingService.testCount()).build());
+    public BaseResponse testCount() {
+        return ResponseBuilder.custom().data(testingService.testCount()).build();
     }
 
     @GetMapping(value = "/questions", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public Mono<BaseResponse> question() {
+    public BaseResponse question() {
         TcmQuestionResp question = testingService.question();
-        return Mono.justOrEmpty(ResponseBuilder.custom().data(question).build());
+        return ResponseBuilder.custom().data(question).build();
     }
 
     @PostMapping(value = "/questions", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public Mono<BaseResponse> question(@RequestBody TcmRequest tcmRequest) {
+    public BaseResponse question(@RequestBody TcmRequest tcmRequest) {
         testingService.saveQuestion(tcmRequest);
-        return Mono.justOrEmpty(ResponseBuilder.custom().data(tcmRequest).build());
+        return ResponseBuilder.custom().data(tcmRequest).build();
     }
 
     @PostMapping(value = "/test", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public Mono<BaseResponse> submit(@RequestBody TcmRequest tcmRequest) {
-        return Mono.justOrEmpty(ResponseBuilder.custom().data(testingService.submit(tcmRequest)).build());
+    public BaseResponse submit(@RequestBody TcmRequest tcmRequest) {
+        return ResponseBuilder.custom().data(testingService.submit(tcmRequest)).build();
     }
 
     @PostMapping(value = "/result/{id}")
-    public Mono<BaseResponse> result(@PathVariable("id") String id) throws SystemException {
-        return Mono.justOrEmpty(ResponseBuilder.custom().data(testingService.result(id)).build());
+    public BaseResponse result(@PathVariable("id") String id) throws SystemException {
+        return ResponseBuilder.custom().data(testingService.result(id)).build();
     }
-
     @GetMapping("/unscramble")
-    public Mono<BaseResponse> getUnscramble(String name, int page, int pageSize, HttpServerRequest req) throws IllegalAccessException {
+    public BaseResponse getUnscramble(String name, int page, int pageSize, HttpServletRequest req) throws IllegalAccessException {
         check(req);
-        return Mono.justOrEmpty(ResponseBuilder.custom().data(testingService.getUnscramble(name, page, pageSize)).build());
+        return ResponseBuilder.custom().data(testingService.getUnscramble(name, page, pageSize)).totalCount(testingService.countUnscramble(name)).currPage(page).pageSize(pageSize).build();
     }
 
     @PostMapping("/unscramble")
-    public Mono<BaseResponse> addUnscramble(@RequestBody UnscrambleRequest unscrambleRequest, HttpServerRequest req) throws IllegalAccessException {
+    public BaseResponse addUnscramble(@RequestBody UnscrambleRequest unscrambleRequest, HttpServletRequest req) throws IllegalAccessException {
         check(req);
         testingService.addUnscramble(unscrambleRequest);
-        return Mono.justOrEmpty(ResponseBuilder.custom().build());
+        return ResponseBuilder.custom().build();
     }
 
+    @PutMapping("/unscramble/{id}")
+    public BaseResponse updateUnscramble(@PathVariable("id") int id, @RequestBody UnscrambleRequest unscrambleRequest, HttpServletRequest req) throws IllegalAccessException {
+        check(req);
+        testingService.upadteUnscramble(id, unscrambleRequest);
+        return ResponseBuilder.custom().build();
+    }
     @DeleteMapping("/unscramble/{id}")
-    public Mono<BaseResponse> deleteUnscramble(@PathVariable("id") int id, HttpServerRequest req) throws IllegalAccessException {
+    public BaseResponse deleteUnscramble(@PathVariable("id") int id, HttpServletRequest req) throws IllegalAccessException {
         check(req);
         testingService.deleteUnscramble(id);
-        return Mono.justOrEmpty(ResponseBuilder.custom().build());
+        return ResponseBuilder.custom().build();
     }
 
     @GetMapping("/unanalysis")
-    public Mono<BaseResponse> getUnanalysis(int page, int pageSize, HttpServerRequest req) throws IllegalAccessException {
+    public BaseResponse getUnanalysis(int page, int pageSize, HttpServletRequest req) throws IllegalAccessException {
         check(req);
-        return Mono.justOrEmpty(ResponseBuilder.custom().data(testingService.getUnanalysis(page, pageSize)).build());
+        return ResponseBuilder.custom().data(testingService.getUnanalysis(page, pageSize)).build();
+    }
+
+    @GetMapping("/users")
+    public BaseResponse getTcmUser(String name, boolean analyze, int page, int pageSize, HttpServletRequest req) throws IllegalAccessException {
+        check(req);
+        return ResponseBuilder.custom().data(testingService.getTcmUser(name, analyze, page, pageSize)).build();
     }
 }

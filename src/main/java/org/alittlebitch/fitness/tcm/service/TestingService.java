@@ -381,7 +381,7 @@ public class TestingService {
         return flag;
     }
 
-    public List<Analysis> getUnscramble(String name, int page, int pageSize) {
+    public List<UnscrambleRequest> getUnscramble(String name, int page, int pageSize) {
         if (page == 0)
             page = 1;
         if (pageSize == 0 || pageSize > 50)
@@ -391,9 +391,74 @@ public class TestingService {
         if (!StringUtil.isEmpty(name))
             sql.append("where name like '%" + name + "%' ");
         sql.append("limit " + (page - 1) * pageSize + "," + pageSize);
-
         List<Analysis> list = testingDao.getAnalysis(sql.toString());
-        return list;
+
+        List<UnscrambleRequest> unscrambleRequests = new ArrayList<>();
+        list.stream().forEach(e -> {
+            UnscrambleRequest unscrambleRequest = new UnscrambleRequest();
+            unscrambleRequest.setId(e.getId());
+            unscrambleRequest.setUnscrambleName(e.getName());
+            unscrambleRequest.setUnscrambleContent(e.getAnalysis());
+            List<UnscrambleInfo> unscrambleInfos = new ArrayList<>();
+            {
+                UnscrambleInfo unscrambleInfo = new UnscrambleInfo();
+                unscrambleInfo.setSomatoType(SomatoType.MILDPHYSICAL);
+                unscrambleInfo.setIsAccord(e.getMildphysical());
+                unscrambleInfos.add(unscrambleInfo);
+            }
+            {
+                UnscrambleInfo unscrambleInfo = new UnscrambleInfo();
+                unscrambleInfo.setSomatoType(SomatoType.BLOODSTASIS);
+                unscrambleInfo.setIsAccord(e.getBloodstasis());
+                unscrambleInfos.add(unscrambleInfo);
+            }
+            {
+                UnscrambleInfo unscrambleInfo = new UnscrambleInfo();
+                unscrambleInfo.setSomatoType(SomatoType.DAMPNESSHEAT);
+                unscrambleInfo.setIsAccord(e.getDampnessheat());
+                unscrambleInfos.add(unscrambleInfo);
+            }
+            {
+                UnscrambleInfo unscrambleInfo = new UnscrambleInfo();
+                unscrambleInfo.setSomatoType(SomatoType.FAINTPHYSICAL);
+                unscrambleInfo.setIsAccord(e.getFaintphysical());
+                unscrambleInfos.add(unscrambleInfo);
+            }
+            {
+                UnscrambleInfo unscrambleInfo = new UnscrambleInfo();
+                unscrambleInfo.setSomatoType(SomatoType.PHLEGMDAMPNESS);
+                unscrambleInfo.setIsAccord(e.getPhlegmdampness());
+                unscrambleInfos.add(unscrambleInfo);
+            }
+            {
+                UnscrambleInfo unscrambleInfo = new UnscrambleInfo();
+                unscrambleInfo.setSomatoType(SomatoType.QISTAGNATION);
+                unscrambleInfo.setIsAccord(e.getQistagnation());
+                unscrambleInfos.add(unscrambleInfo);
+            }
+            {
+                UnscrambleInfo unscrambleInfo = new UnscrambleInfo();
+                unscrambleInfo.setSomatoType(SomatoType.TEBING);
+                unscrambleInfo.setIsAccord(e.getTebing());
+                unscrambleInfos.add(unscrambleInfo);
+            }
+            {
+                UnscrambleInfo unscrambleInfo = new UnscrambleInfo();
+                unscrambleInfo.setSomatoType(SomatoType.YANGINSUFFICIENCY);
+                unscrambleInfo.setIsAccord(e.getYanginsufficiency());
+                unscrambleInfos.add(unscrambleInfo);
+            }
+            {
+                UnscrambleInfo unscrambleInfo = new UnscrambleInfo();
+                unscrambleInfo.setSomatoType(SomatoType.YINDEFICIENCY);
+                unscrambleInfo.setIsAccord(e.getYindeficiency());
+                unscrambleInfos.add(unscrambleInfo);
+            }
+            unscrambleRequest.setAdapterPhysique(unscrambleInfos);
+            unscrambleRequests.add(unscrambleRequest);
+        });
+
+        return unscrambleRequests;
     }
 
     public void addUnscramble(UnscrambleRequest unscrambleRequest) {
@@ -404,6 +469,7 @@ public class TestingService {
         Map<SomatoType, Determination> map = new HashMap();
         unscrambleRequest.getAdapterPhysique().forEach(e -> map.put(e.getSomatoType(), e.getIsAccord()));
         if (testingDao.saveUnscramble(unscrambleRequest.getUnscrambleName(),
+                unscrambleRequest.getUnscrambleContent(),
                 map.get(YANGINSUFFICIENCY),
                 map.get(YINDEFICIENCY),
                 map.get(FAINTPHYSICAL),
@@ -429,5 +495,39 @@ public class TestingService {
         if (pageSize == 0 || pageSize > 50)
             pageSize = 10;
         return testingDao.getUnanalysis((page - 1) * pageSize, pageSize);
+    }
+
+    public int countUnscramble(String name) {
+        return testingDao.countUnscramble(name);
+    }
+
+    public void upadteUnscramble(int id, UnscrambleRequest unscrambleRequest) {
+        Analysis analysis = testingDao.existsUnscrambleById(id);
+        if (Objects.isNull(analysis))
+            throw new RuntimeException("数据不存在");
+        if (!analysis.getName().equals(unscrambleRequest.getUnscrambleName()))
+            if (testingDao.existsUnscramble(unscrambleRequest.getUnscrambleName()) != 0)
+                throw new RuntimeException("名字重复");
+        Map<SomatoType, Determination> map = new HashMap();
+        unscrambleRequest.getAdapterPhysique().forEach(e -> map.put(e.getSomatoType(), e.getIsAccord()));
+        if (testingDao.updateUnscramble(id, unscrambleRequest.getUnscrambleName(),
+                unscrambleRequest.getUnscrambleContent(),
+                map.get(YANGINSUFFICIENCY),
+                map.get(YINDEFICIENCY),
+                map.get(FAINTPHYSICAL),
+                map.get(PHLEGMDAMPNESS),
+                map.get(DAMPNESSHEAT),
+                map.get(BLOODSTASIS),
+                map.get(TEBING),
+                map.get(QISTAGNATION),
+                map.get(MILDPHYSICAL)
+        ) != 1) {
+            throw new RuntimeException("修改解读失败");
+        }
+
+    }
+
+    public Object getTcmUser(String name, boolean analyze, int page, int pageSize) {
+        return null;
     }
 }

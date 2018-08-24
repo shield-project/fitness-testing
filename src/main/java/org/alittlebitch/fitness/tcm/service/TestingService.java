@@ -4,10 +4,12 @@ import org.alittlebitch.fitness.dto.*;
 import org.alittlebitch.fitness.tcm.bean.Analysis;
 import org.alittlebitch.fitness.tcm.bean.ResultRecord;
 import org.alittlebitch.fitness.tcm.bean.SomatoInfo;
+import org.alittlebitch.fitness.tcm.bean.TcmUser;
 import org.alittlebitch.fitness.tcm.dao.TestingDao;
 import org.alittlebitch.fitness.tcm.enums.Determination;
 import org.alittlebitch.fitness.tcm.enums.SomatoType;
 import org.shoper.commons.core.CloneUtil;
+import org.shoper.commons.core.MD5Util;
 import org.shoper.commons.core.StringUtil;
 import org.shoper.commons.core.SystemException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -91,6 +93,8 @@ public class TestingService {
 //        somatoInfos.add(mildPhysical);
         Map<String, Double> score = new HashMap<>();
         somatoInfos.stream().forEach(e -> score.put(e.getTypeValue(), e.getPercent()));
+        if (testingDao.existsUserResult(userInfo.getPhone()) == 1)
+            testingDao.deleteUserResult(userInfo.getPhone());
         testingDao.saveUserResult(id, score.get(YANGINSUFFICIENCY.name()), score.get(YINDEFICIENCY.name()), score.get(FAINTPHYSICAL.name()), score.get(PHLEGMDAMPNESS.name()), score.get(DAMPNESSHEAT.name()), score.get(BLOODSTASIS.name()), score.get(TEBING.name()), score.get(QISTAGNATION.name()), score.get(MILDPHYSICAL.name()), userInfo.getName(), userInfo.getPhone(), userInfo.getSex(), userInfo.getAge(), userInfo.getAddress());
 //        resultRecord.setTestResult(somatoInfos);
 //        resultRecord.setUserInfo(userInfo);
@@ -269,6 +273,7 @@ public class TestingService {
         somatoInfos.stream().forEach(e -> somatoTypeFloatMap.put(SomatoType.valueOf(e.getTypeValue()), e.getPercent()));
 
         //查询解读
+        Double mildScore = somatoTypeFloatMap.get(MILDPHYSICAL);
         somatoTypeFloatMap.remove(SomatoType.MILDPHYSICAL);
         Map<SomatoType, Double> biasedMap = CloneUtil.depthClone(somatoTypeFloatMap, Map.class);
 
@@ -285,9 +290,9 @@ public class TestingService {
             });
             determinationDeter.put(SomatoType.MILDPHYSICAL, Determination.NO);
         } else {
-            if (!lte30.isEmpty() && somatoTypeFloatMap.get(SomatoType.MILDPHYSICAL) >= 60)
+            if (!lte30.isEmpty() && mildScore >= 60)
                 determinationDeter.put(SomatoType.MILDPHYSICAL, Determination.YES);
-            else if (!gte30.isEmpty() && somatoTypeFloatMap.get(SomatoType.MILDPHYSICAL) >= 60) {
+            else if (!gte30.isEmpty() && mildScore >= 60) {
                 determinationDeter.put(SomatoType.MILDPHYSICAL, Determination.MAYBE);
                 gte30.stream().forEach(e -> somatoInfos.stream().filter(s -> s.getTypeName().equals(e)).forEach(b -> determinationDeter.put(SomatoType.valueOf(b.getTypeValue()), Determination.MAYBE)));
             } else
@@ -302,81 +307,100 @@ public class TestingService {
         //查询数据库所有数据进行内存运算
         List<Analysis> analyses = testingDao.queryAllAnalysis();
 //        analyses.get(0).getBloodstasis()
-        Optional<String> anyAnalysis = analyses.stream().map(b -> {
+        Optional<Analysis> anyAnalysis = analyses.stream().map(b -> {
             boolean mildphysicalFlag = false;
             {
                 Determination determination = determinationDeter.get(SomatoType.MILDPHYSICAL);
-                mildphysicalFlag = judge(b, determination);
+                mildphysicalFlag = judge(b.getMildphysical(), determination);
             }
             boolean yanginsufficiencyFlag = false;
             {
                 Determination determination = determinationDeter.get(SomatoType.YANGINSUFFICIENCY);
-                yanginsufficiencyFlag = judge(b, determination);
+                yanginsufficiencyFlag = judge(b.getYanginsufficiency(), determination);
             }
             boolean bloodstasisFlag = false;
             {
                 Determination determination = determinationDeter.get(SomatoType.BLOODSTASIS);
-                bloodstasisFlag = judge(b, determination);
+                bloodstasisFlag = judge(b.getBloodstasis(), determination);
             }
             boolean dampnessheatFlag = false;
             {
                 Determination determination = determinationDeter.get(SomatoType.DAMPNESSHEAT);
-                dampnessheatFlag = judge(b, determination);
+                dampnessheatFlag = judge(b.getDampnessheat(), determination);
             }
             boolean faintphysicalFlag = false;
             {
                 Determination determination = determinationDeter.get(SomatoType.FAINTPHYSICAL);
-                faintphysicalFlag = judge(b, determination);
+                faintphysicalFlag = judge(b.getFaintphysical(), determination);
             }
             boolean phlegmdampnessFlag = false;
             {
                 Determination determination = determinationDeter.get(SomatoType.PHLEGMDAMPNESS);
-                phlegmdampnessFlag = judge(b, determination);
+                phlegmdampnessFlag = judge(b.getPhlegmdampness(), determination);
             }
             boolean qistagnationFlag = false;
             {
                 Determination determination = determinationDeter.get(SomatoType.QISTAGNATION);
-                qistagnationFlag = judge(b, determination);
+                qistagnationFlag = judge(b.getQistagnation(), determination);
             }
             boolean tebingFlag = false;
             {
                 Determination determination = determinationDeter.get(SomatoType.TEBING);
-                tebingFlag = judge(b, determination);
+                tebingFlag = judge(b.getTebing(), determination);
             }
             boolean yindeficiencyFlag = false;
             {
                 Determination determination = determinationDeter.get(SomatoType.YINDEFICIENCY);
-                yindeficiencyFlag = judge(b, determination);
+                yindeficiencyFlag = judge(b.getYindeficiency(), determination);
             }
             if (mildphysicalFlag && yanginsufficiencyFlag && bloodstasisFlag && dampnessheatFlag && faintphysicalFlag && phlegmdampnessFlag && qistagnationFlag && tebingFlag && yindeficiencyFlag)
-                return b.getAnalysis();
+                return b;
             else return null;
         }).filter(Objects::nonNull).findAny();
         if (anyAnalysis.isPresent()) {
             //找到合适的解读
-            resultRecord.setUnscrambleContent(anyAnalysis.get());
+            resultRecord.setUnscrambleContent(anyAnalysis.get().getAnalysis());
         } else {
             //未找到合适的解读
             resultRecord.setUnscrambleContent("暂无匹配的数据,请等待专家提供！");
             //储存无法匹配的相应数据
-            testingDao.saveUnAnalysisData(determinationDeter.get(YANGINSUFFICIENCY), determinationDeter.get(YINDEFICIENCY), determinationDeter.get(FAINTPHYSICAL), determinationDeter.get(PHLEGMDAMPNESS), determinationDeter.get(DAMPNESSHEAT), determinationDeter.get(BLOODSTASIS), determinationDeter.get(TEBING), determinationDeter.get(QISTAGNATION), determinationDeter.get(MILDPHYSICAL));
+            String md5Code = MD5Util.getMD5Code(determinationDeter.get(YANGINSUFFICIENCY).getName() + determinationDeter.get(YINDEFICIENCY).getName() + determinationDeter.get(FAINTPHYSICAL).getName() + determinationDeter.get(PHLEGMDAMPNESS).getName() + determinationDeter.get(DAMPNESSHEAT).getName() + determinationDeter.get(BLOODSTASIS).getName() + determinationDeter.get(TEBING).getName() + determinationDeter.get(QISTAGNATION).getName() + determinationDeter.get(MILDPHYSICAL).getName());
+            //检查该解读是否已经存库
+            if (testingDao.existsUnAnalysisData(md5Code) == 0)
+                testingDao.saveUnAnalysisData(md5Code, determinationDeter.get(YANGINSUFFICIENCY), determinationDeter.get(YINDEFICIENCY), determinationDeter.get(FAINTPHYSICAL), determinationDeter.get(PHLEGMDAMPNESS), determinationDeter.get(DAMPNESSHEAT), determinationDeter.get(BLOODSTASIS), determinationDeter.get(TEBING), determinationDeter.get(QISTAGNATION), determinationDeter.get(MILDPHYSICAL));
         }
-
+        if (testingDao.existsUserAnalyze(userInfo.getPhone()) == 1) {
+            testingDao.deleteUserAnalyze(userInfo.getPhone());
+        }
+        //保存用户的解读数据determinationDeter
+        testingDao.saveUserAnalyze(userInfo.getPhone(),
+                determinationDeter.get(YANGINSUFFICIENCY).name(),
+                determinationDeter.get(YINDEFICIENCY).name(),
+                determinationDeter.get(FAINTPHYSICAL).name(),
+                determinationDeter.get(PHLEGMDAMPNESS).name(),
+                determinationDeter.get(DAMPNESSHEAT).name(),
+                determinationDeter.get(BLOODSTASIS).name(),
+                determinationDeter.get(TEBING).name(),
+                determinationDeter.get(QISTAGNATION).name(),
+                determinationDeter.get(MILDPHYSICAL).name(),
+                anyAnalysis.get().getAnalysis()
+        );
+        testingDao.updateIsAnalyze(id, anyAnalysis.get().getId());
         return resultRecord;
     }
 
-    private boolean judge(Analysis b, Determination determination) {
+    private boolean judge(Determination a, Determination determination) {
         boolean flag = false;
         if (Determination.YES.equals(determination)) {
-            if (determination.equals(b.getBloodstasis())) {
+            if (determination.equals(a)) {
                 flag = true;
-            } else if (Determination.MAYBE.equals(b.getBloodstasis())) {
+            } else if (Determination.MAYBE.equals(a)) {
                 flag = true;
             }
         } else if (Determination.MAYBE.equals(determination)) {
-            if (Determination.MAYBE.equals(b.getBloodstasis())) flag = true;
+            if (Determination.MAYBE.equals(a)) flag = true;
         } else {
-            if (Determination.NO.equals(b.getBloodstasis())) flag = true;
+            if (Determination.NO.equals(a)) flag = true;
         }
         return flag;
     }
@@ -527,7 +551,54 @@ public class TestingService {
 
     }
 
-    public Object getTcmUser(String name, boolean analyze, int page, int pageSize) {
-        return null;
+    public List<TcmUserResponse> getTcmUser(String name, Boolean analyze, int page, int pageSize) {
+        if (page <= 0) page = 1;
+        if (pageSize <= 0 || pageSize > 50) pageSize = 50;
+        StringBuilder sql = new StringBuilder();
+        sql.append("select * from testing_score_record ");
+        if (analyze != null || name != null) sql.append("where ");
+        if (name != null)
+            sql.append(" where name like '%" + name + "%' ");
+        if (Objects.nonNull(analyze)) {
+            if (analyze)
+                sql.append(" a_id <> null' ");
+            else if (!analyze)
+                sql.append("a_id == null ");
+        }
+        sql.append("limit " + (page - 1) * pageSize + "," + pageSize);
+        System.out.println(sql);
+        List<TcmUser> tcmUser = testingDao.getTcmUser(sql.toString());
+//        List<TcmUserResponse> tcmUserResponses = new ArrayList<>();
+        List<TcmUserResponse> collect = tcmUser.stream().map(e -> {
+            TcmUserResponse tcmUserResponse = new TcmUserResponse();
+            UserInfo userInfo = new UserInfo();
+            userInfo.setSex(e.getSex());
+            userInfo.setPhone(e.getPhone());
+            userInfo.setAge(e.getAge());
+            userInfo.setAddress(e.getAddress());
+            userInfo.setName(e.getName());
+            tcmUserResponse.setUserInfo(userInfo);
+            if (e.getAnalysisId() != null)
+                tcmUserResponse.setAnalysis(true);
+            if (tcmUserResponse.isAnalysis()) {
+                Map<String, Object> stringObjectMap = testingDao.queryUserAnalyze(e.getPhone());
+                if (Objects.nonNull(stringObjectMap)) {
+                    stringObjectMap.remove("user_id");
+                    String analysis = (String) stringObjectMap.get("analysis");
+                    stringObjectMap.remove("analysis");
+                    List<UnscrambleInfo> unscrambleInfos = new ArrayList<>();
+                    stringObjectMap.entrySet().forEach(b -> {
+                        UnscrambleInfo unscrambleInfo = new UnscrambleInfo();
+                        unscrambleInfo.setSomatoType(SomatoType.valueOf(b.getKey().toUpperCase()));
+                        unscrambleInfo.setIsAccord(Determination.valueOf(((String) b.getValue()).toUpperCase()));
+                        unscrambleInfos.add(unscrambleInfo);
+                    });
+                    tcmUserResponse.setUnscramble(unscrambleInfos);
+                    tcmUserResponse.setUnscrambleContent(analysis);
+                }
+            }
+            return tcmUserResponse;
+        }).collect(Collectors.toList());
+        return collect;
     }
 }

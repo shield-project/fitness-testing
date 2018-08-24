@@ -2,6 +2,7 @@ package org.alittlebitch.fitness.tcm.dao;
 
 import org.alittlebitch.fitness.tcm.bean.Analysis;
 import org.alittlebitch.fitness.tcm.bean.Question;
+import org.alittlebitch.fitness.tcm.bean.TcmUser;
 import org.alittlebitch.fitness.tcm.enums.Determination;
 import org.alittlebitch.fitness.tcm.enums.SomatoType;
 import org.apache.ibatis.annotations.*;
@@ -33,8 +34,8 @@ public interface TestingDao {
     @Select("select * from testing_analysis")
     List<Analysis> queryAllAnalysis();
 
-    @Insert("insert into (yanginsufficiency,yindeficiency,faintphysical,phlegmdampness,dampnessheat,bloodstasis,tebing,qistagnation,mildphysical) values (#{yanginsufficiency},#{yindeficiency},#{faintphysical},#{phlegmdampness},#{dampnessheat},#{bloodstasis},#{tebing},#{qistagnation},#{mildphysical})")
-    int saveUnAnalysisData(@Param("yanginsufficiency") Determination yanginsufficiency, @Param("yindeficiency") Determination yindeficiency, @Param("faintphysical") Determination faintphysical, @Param("phlegmdampness") Determination phlegmdampness, @Param("dampnessheat") Determination dampnessheat, @Param("bloodstasis") Determination bloodstasis, @Param("tebing") Determination tebing, @Param("qistagnation") Determination qistagnation, @Param("mildphysical") Determination mildphysical);
+    @Insert("insert into testing_unanalysis (value,yanginsufficiency,yindeficiency,faintphysical,phlegmdampness,dampnessheat,bloodstasis,tebing,qistagnation,mildphysical) values (#{md5value},#{yanginsufficiency},#{yindeficiency},#{faintphysical},#{phlegmdampness},#{dampnessheat},#{bloodstasis},#{tebing},#{qistagnation},#{mildphysical})")
+    int saveUnAnalysisData(@Param("md5value") String value, @Param("yanginsufficiency") Determination yanginsufficiency, @Param("yindeficiency") Determination yindeficiency, @Param("faintphysical") Determination faintphysical, @Param("phlegmdampness") Determination phlegmdampness, @Param("dampnessheat") Determination dampnessheat, @Param("bloodstasis") Determination bloodstasis, @Param("tebing") Determination tebing, @Param("qistagnation") Determination qistagnation, @Param("mildphysical") Determination mildphysical);
 
     @Select("${sql}")
     List<Analysis> getAnalysis(@Param("sql") String sql);
@@ -69,4 +70,31 @@ public interface TestingDao {
                          @Param("tebing") Determination tebing,
                          @Param("qistagnation") Determination qistagnation,
                          @Param("mildphysical") Determination mildphysical);
+
+    @Update("update testing_score_record set analysis_id = #{aid} where id = #{rid}")
+    int updateIsAnalyze(@Param("rid") String rid, @Param("aid") int aid);
+
+    @Select("select count(0) from testing_unanalysis where value = #{md5Code}")
+    int existsUnAnalysisData(@Param("md5Code") String md5Code);
+
+    @Select("${sql}")
+    List<TcmUser> getTcmUser(@Param("sql") String sql);
+
+    @Insert("insert into testing_user_analysis (user_id,yanginsufficiency,yindeficiency,faintphysical,phlegmdampness,dampnessheat,bloodstasis,tebing,qistagnation,mildphysical,analysis) values (#{userId},#{yanginsufficiency},#{yindeficiency},#{faintphysical},#{phlegmdampness},#{dampnessheat},#{bloodstasis},#{tebing},#{qistagnation},#{mildphysical},#{analysis})")
+    int saveUserAnalyze(@Param("userId") String user_id, @Param("yanginsufficiency") String yanginsufficiency, @Param("yindeficiency") String yindeficiency, @Param("faintphysical") String faintphysical, @Param("phlegmdampness") String phlegmdampness, @Param("dampnessheat") String dampnessheat, @Param("bloodstasis") String bloodstasis, @Param("tebing") String tebing, @Param("qistagnation") String qistagnation, @Param("mildphysical") String mildphysical, @Param("analysis") String analysis);
+
+    @Select("select user_id,yanginsufficiency,yindeficiency,faintphysical,phlegmdampness,dampnessheat,bloodstasis,tebing,qistagnation,mildphysical,analysis from testing_user_analysis where user_id = #{userId}")
+    Map<String, Object> queryUserAnalyze(String userId);
+
+    @Select("select count(0) from testing_user_analysis where phone = #{phone}")
+    int existsUserAnalyze(@Param("phone") String phone);
+
+    @Select("delete from testing_user_analysis where phone = #{phone}")
+    int deleteUserAnalyze(@Param("phone") String phone);
+
+    @Select("select count(0) from testing_score_record where phone = #{phone}")
+    int existsUserResult(@Param("phone") String phone);
+
+    @Select("delete from testing_score_record where phone = #{phone}")
+    int deleteUserResult(@Param("phone") String phone);
 }

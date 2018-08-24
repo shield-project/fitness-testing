@@ -14,11 +14,13 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class GloableExceptionHandler {
     @ExceptionHandler(IllegalAccessException.class)
     public HttpEntity<BaseResponse> illegalAccessExceptionHandle(Exception e) {
+        e.printStackTrace();
         return new HttpEntity<BaseResponse>(ResponseBuilder.custom().failed(e.getMessage(), 501).build());
     }
 
     @ExceptionHandler(Exception.class)
     public HttpEntity<BaseResponse> exceptionHandle(Exception e) {
+        e.printStackTrace();
         return new HttpEntity<BaseResponse>(ResponseBuilder.custom().failed(e.getMessage(), 500).build());
     }
 }

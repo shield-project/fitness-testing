@@ -86,7 +86,8 @@ public class TestingController {
     @GetMapping("/users")
     public BaseResponse getTcmUser(String name, Boolean analyze, int page, int pageSize, HttpServletRequest req) throws IllegalAccessException {
         check(req);
-        return ResponseBuilder.custom().data(testingService.getTcmUser(name, analyze, page, pageSize)).build();
+        int count = testingService.countTcmUser(name, analyze);
+        return ResponseBuilder.custom().data(testingService.getTcmUser(name, analyze, page, pageSize)).totalCount(count).pageSize(pageSize).currPage(page).build();
     }
 
 

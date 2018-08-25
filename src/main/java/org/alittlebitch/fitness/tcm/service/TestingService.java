@@ -556,14 +556,14 @@ public class TestingService {
         if (pageSize <= 0 || pageSize > 50) pageSize = 50;
         StringBuilder sql = new StringBuilder();
         sql.append("select * from testing_score_record ");
-        if (analyze != null || name != null) sql.append("where ");
-        if (name != null)
-            sql.append(" where name like '%" + name + "%' ");
+        if (analyze != null || StringUtil.nonEmpty(name)) sql.append("where ");
+        if (StringUtil.nonEmpty(name))
+            sql.append(" name like '%" + name + "%' ");
         if (Objects.nonNull(analyze)) {
             if (analyze)
-                sql.append(" a_id <> null' ");
+                sql.append(" analysis_id is not NULL ");
             else if (!analyze)
-                sql.append("a_id == null ");
+                sql.append(" analysis_id is NULL ");
         }
         sql.append("limit " + (page - 1) * pageSize + "," + pageSize);
         System.out.println(sql);
@@ -600,5 +600,20 @@ public class TestingService {
             return tcmUserResponse;
         }).collect(Collectors.toList());
         return collect;
+    }
+
+    public int countTcmUser(String name, Boolean analyze) {
+        StringBuilder sql = new StringBuilder();
+        sql.append("select count(0) from testing_score_record ");
+        if (analyze != null || StringUtil.nonEmpty(name)) sql.append("where ");
+        if (StringUtil.nonEmpty(name))
+            sql.append(" name like '%" + name + "%' ");
+        if (Objects.nonNull(analyze)) {
+            if (analyze)
+                sql.append(" analysis_id is not NULL ");
+            else if (!analyze)
+                sql.append(" analysis_id is NULL ");
+        }
+        return testingDao.countTcmUser(sql.toString());
     }
 }

@@ -97,4 +97,7 @@ public interface TestingDao {
 
     @Select("delete from testing_score_record where phone = #{phone}")
     int deleteUserResult(@Param("phone") String phone);
+
+    @Select("${tcmUserSql}")
+    int countTcmUser(@Param("tcmUserSql") String sql);
 }

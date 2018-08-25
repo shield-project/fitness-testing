@@ -86,16 +86,16 @@ public interface TestingDao {
     @Select("select user_id,yanginsufficiency,yindeficiency,faintphysical,phlegmdampness,dampnessheat,bloodstasis,tebing,qistagnation,mildphysical,analysis from testing_user_analysis where user_id = #{userId}")
     Map<String, Object> queryUserAnalyze(String userId);
 
-    @Select("select count(0) from testing_user_analysis where phone = #{phone}")
+    @Select("select count(0) from testing_user_analysis where user_id = #{phone}")
     int existsUserAnalyze(@Param("phone") String phone);
 
-    @Select("delete from testing_user_analysis where phone = #{phone}")
+    @Delete("delete from testing_user_analysis where user_id = #{phone}")
     int deleteUserAnalyze(@Param("phone") String phone);
 
     @Select("select count(0) from testing_score_record where phone = #{phone}")
     int existsUserResult(@Param("phone") String phone);
 
-    @Select("delete from testing_score_record where phone = #{phone}")
+    @Delete("delete from testing_score_record where phone = #{phone}")
     int deleteUserResult(@Param("phone") String phone);
 
     @Select("${tcmUserSql}")

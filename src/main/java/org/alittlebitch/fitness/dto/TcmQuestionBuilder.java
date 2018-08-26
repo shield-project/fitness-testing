@@ -20,6 +20,7 @@ public class TcmQuestionBuilder {
 
     public static TcmQuestion create(Question question) {
         TcmQuestion tcmQuestion = new TcmQuestion();
+        tcmQuestion.setId(question.getId());
         tcmQuestion.setTypeName(question.getSomatoType().getTitle());
         tcmQuestion.setQuestion(question.getQuestion());
         if (question.getSortType() == 0) {

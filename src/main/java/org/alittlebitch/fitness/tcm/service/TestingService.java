@@ -36,6 +36,42 @@ public class TestingService {
 
     public TcmQuestionResp question() {
         List<TcmQuestion> tcmQuestions = TcmQuestionBuilder.create(testingDao.findQuestion());
+        Map<String, List<TcmQuestion>> repeat = new HashMap<>();
+        for (TcmQuestion tcmQuestion : tcmQuestions) {
+            for (TcmQuestion question : tcmQuestions) {
+                if (question.getQuestion().equals(tcmQuestion.getQuestion()) && !question.getTypeValue().equals(tcmQuestion.getTypeValue())) {
+                    if (!question.getTypeValue().equals(SomatoType.MILDPHYSICAL.getValue())) {
+                        if (!repeat.containsKey(question.getQuestion()))
+                            repeat.put(question.getQuestion(), new ArrayList<>());
+                        repeat.get(question.getQuestion()).add(question);
+                    }
+                }
+            }
+        }
+
+        Map<Long, List<TcmQuestionA>> pojo = new HashMap<>();
+        tcmQuestions.stream().filter(e -> repeat.containsKey(e.getQuestion())).forEach(e -> {
+            List<TcmQuestion> tcmQuestions1 = repeat.get(e.getQuestion());
+            List<TcmQuestionA> collect = tcmQuestions1.stream().filter(b -> !e.getTypeValue().equals(b.getTypeValue())).map(c -> {
+                TcmQuestionA tcmQuestionA = new TcmQuestionA();
+                tcmQuestionA.setId(c.getId());
+                tcmQuestionA.setQuestion(c.getQuestion());
+                tcmQuestionA.setSortType(c.getSortType());
+                tcmQuestionA.setTypeName(c.getTypeName());
+                tcmQuestionA.setTypeValue(c.getTypeValue());
+                return tcmQuestionA;
+            }).collect(Collectors.toList());
+            pojo.put(e.getId(), collect);
+//            e.setOther(collect);
+        });
+        for (int i = 0; i < tcmQuestions.size(); i++) {
+            TcmQuestion tcmQuestion = tcmQuestions.get(i);
+            if (tcmQuestion.getTypeValue().equals(SomatoType.MILDPHYSICAL.getValue())) continue;
+            if (pojo.containsKey(tcmQuestion.getId())) {
+
+                tcmQuestion.setOther(pojo.get(tcmQuestion.getId()));
+            }
+        }
         TcmQuestionResp tcmQuestionResp = new TcmQuestionResp();
         tcmQuestionResp.setTotal(tcmQuestions.size());
         tcmQuestionResp.setQuestions(tcmQuestions);

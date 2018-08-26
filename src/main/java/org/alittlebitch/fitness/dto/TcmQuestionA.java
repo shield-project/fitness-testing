@@ -8,6 +8,7 @@ import lombok.Data;
  */
 @Data
 public class TcmQuestionA {
+    private String sex;
     private Long id;
     private String question;
     private String typeName;

@@ -19,8 +19,11 @@ public interface TestingDao {
     @Select("select count(0) from testing_question")
     long testCount();
 
-    @Select("select question,id,somato_type,create_time,sort_type from testing_question order by somato_type asc")
+    @Select("select question,sex,id,somato_type,create_time,sort_type from testing_question order by somato_type asc")
     List<Question> findQuestion();
+
+    @Select("select question,sex,id,somato_type,create_time,sort_type from testing_question where sex <> '#{sex}' order by somato_type asc")
+    List<Question> findQuestionNotBySex(@Param("sex") String sex);
 
     @Insert("insert into testing_question (question,somato_type) values (#{question},#{somatoType})")
     int saveQuestion(@Param("question") String question, @Param("somatoType") SomatoType somatoType);
@@ -100,4 +103,5 @@ public interface TestingDao {
 
     @Select("${tcmUserSql}")
     int countTcmUser(@Param("tcmUserSql") String sql);
+
 }

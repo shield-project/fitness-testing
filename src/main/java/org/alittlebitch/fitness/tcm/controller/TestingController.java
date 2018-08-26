@@ -31,8 +31,8 @@ public class TestingController {
     }
 
     @GetMapping(value = "/questions", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public BaseResponse question() {
-        TcmQuestionResp question = testingService.question();
+    public BaseResponse question(String sex) {
+        TcmQuestionResp question = testingService.question(sex);
         return ResponseBuilder.custom().data(question).build();
     }
 

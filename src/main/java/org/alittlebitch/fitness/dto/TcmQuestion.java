@@ -10,6 +10,7 @@ import java.util.List;
  */
 @Data
 public class TcmQuestion {
+    private String sex;
     private Long id;
     private String question;
     private String typeName;

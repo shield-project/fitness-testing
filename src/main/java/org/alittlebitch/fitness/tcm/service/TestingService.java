@@ -34,8 +34,12 @@ public class TestingService {
         return testingDao.testCount();
     }
 
-    public TcmQuestionResp question() {
-        List<TcmQuestion> tcmQuestions = TcmQuestionBuilder.create(testingDao.findQuestion());
+    public TcmQuestionResp question(String sex) {
+        List<TcmQuestion> tcmQuestions = null;
+        if (StringUtil.isEmpty(sex))
+            tcmQuestions = TcmQuestionBuilder.create(testingDao.findQuestion());
+        else
+            tcmQuestions = TcmQuestionBuilder.create(testingDao.findQuestionNotBySex(sex));
         Map<String, List<TcmQuestion>> repeat = new HashMap<>();
         for (TcmQuestion tcmQuestion : tcmQuestions) {
             for (TcmQuestion question : tcmQuestions) {
@@ -58,6 +62,7 @@ public class TestingService {
                 tcmQuestionA.setQuestion(c.getQuestion());
                 tcmQuestionA.setSortType(c.getSortType());
                 tcmQuestionA.setTypeName(c.getTypeName());
+                tcmQuestionA.setSex(c.getSex());
                 tcmQuestionA.setTypeValue(c.getTypeValue());
                 return tcmQuestionA;
             }).collect(Collectors.toList());

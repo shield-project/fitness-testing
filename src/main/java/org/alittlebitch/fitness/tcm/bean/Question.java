@@ -17,6 +17,7 @@ public class Question {
     private Long id;
     private String question;
     private SomatoType somatoType;
+    private String sex;
     @JsonIgnore
     private Date createTime;
 

@@ -69,13 +69,13 @@ public class TestingService {
             pojo.put(e.getId(), collect);
 //            e.setOther(collect);
         });
+        List<TcmQuestionA> needRemove = new ArrayList<>();
         for (int i = 0; i < tcmQuestions.size(); i++) {
             TcmQuestion tcmQuestion = tcmQuestions.get(i);
             if (tcmQuestion.getTypeValue().equals(SomatoType.MILDPHYSICAL.getValue())) continue;
             if (pojo.containsKey(tcmQuestion.getId())) {
                 List<TcmQuestionA> tcmQuestionAS = pojo.get(tcmQuestion.getId());
                 tcmQuestion.setOther(tcmQuestionAS);
-                List<TcmQuestionA> collect = tcmQuestionAS.stream().filter(e -> e.getId() != tcmQuestion.getId()).collect(Collectors.toList());
             }
         }
 

@@ -16,8 +16,8 @@ import java.util.Date;
 public class Question {
     private Long id;
     private String question;
-    private SomatoType somatoType;
     private String sex;
+    private SomatoType somatoType;
     @JsonIgnore
     private Date createTime;
 

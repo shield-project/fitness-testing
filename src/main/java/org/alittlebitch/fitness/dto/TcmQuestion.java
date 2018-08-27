@@ -3,6 +3,7 @@ package org.alittlebitch.fitness.dto;
 import lombok.Data;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author ShawnShoper
@@ -17,6 +18,19 @@ public class TcmQuestion {
     private String typeValue;
     private String sortType;
     private List<TcmQuestionA> other;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TcmQuestion that = (TcmQuestion) o;
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 
     @Override
     public String toString() {

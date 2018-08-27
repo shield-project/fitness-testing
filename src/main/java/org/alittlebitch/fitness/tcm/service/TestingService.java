@@ -73,10 +73,12 @@ public class TestingService {
             TcmQuestion tcmQuestion = tcmQuestions.get(i);
             if (tcmQuestion.getTypeValue().equals(SomatoType.MILDPHYSICAL.getValue())) continue;
             if (pojo.containsKey(tcmQuestion.getId())) {
-
-                tcmQuestion.setOther(pojo.get(tcmQuestion.getId()));
+                List<TcmQuestionA> tcmQuestionAS = pojo.get(tcmQuestion.getId());
+                tcmQuestion.setOther(tcmQuestionAS);
+                List<TcmQuestionA> collect = tcmQuestionAS.stream().filter(e -> e.getId() != tcmQuestion.getId()).collect(Collectors.toList());
             }
         }
+
         TcmQuestionResp tcmQuestionResp = new TcmQuestionResp();
         tcmQuestionResp.setTotal(tcmQuestions.size());
         tcmQuestionResp.setQuestions(tcmQuestions);

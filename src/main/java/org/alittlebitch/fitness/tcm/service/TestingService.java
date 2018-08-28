@@ -403,6 +403,24 @@ public class TestingService {
         if (anyAnalysis.isPresent()) {
             //找到合适的解读
             resultRecord.setUnscrambleContent(anyAnalysis.get().getAnalysis());
+            String analysis = null;
+            if (anyAnalysis.isPresent())
+                analysis = anyAnalysis.get().getAnalysis();
+
+            //保存用户的解读数据determinationDeter
+            testingDao.saveUserAnalyze(userInfo.getPhone(),
+                    determinationDeter.get(YANGINSUFFICIENCY).name(),
+                    determinationDeter.get(YINDEFICIENCY).name(),
+                    determinationDeter.get(FAINTPHYSICAL).name(),
+                    determinationDeter.get(PHLEGMDAMPNESS).name(),
+                    determinationDeter.get(DAMPNESSHEAT).name(),
+                    determinationDeter.get(BLOODSTASIS).name(),
+                    determinationDeter.get(TEBING).name(),
+                    determinationDeter.get(QISTAGNATION).name(),
+                    determinationDeter.get(MILDPHYSICAL).name(),
+                    analysis
+            );
+            testingDao.updateIsAnalyze(id, anyAnalysis.get().getId());
         } else {
             //未找到合适的解读
             resultRecord.setUnscrambleContent("暂无匹配的数据,请等待专家提供！");
@@ -415,20 +433,6 @@ public class TestingService {
         if (testingDao.existsUserAnalyze(userInfo.getPhone()) == 1) {
             testingDao.deleteUserAnalyze(userInfo.getPhone());
         }
-        //保存用户的解读数据determinationDeter
-        testingDao.saveUserAnalyze(userInfo.getPhone(),
-                determinationDeter.get(YANGINSUFFICIENCY).name(),
-                determinationDeter.get(YINDEFICIENCY).name(),
-                determinationDeter.get(FAINTPHYSICAL).name(),
-                determinationDeter.get(PHLEGMDAMPNESS).name(),
-                determinationDeter.get(DAMPNESSHEAT).name(),
-                determinationDeter.get(BLOODSTASIS).name(),
-                determinationDeter.get(TEBING).name(),
-                determinationDeter.get(QISTAGNATION).name(),
-                determinationDeter.get(MILDPHYSICAL).name(),
-                anyAnalysis.get().getAnalysis()
-        );
-        testingDao.updateIsAnalyze(id, anyAnalysis.get().getId());
         return resultRecord;
     }
 

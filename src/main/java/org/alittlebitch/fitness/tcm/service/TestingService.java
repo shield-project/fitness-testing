@@ -136,9 +136,9 @@ public class TestingService {
 //        somatoInfos.add(mildPhysical);
         Map<String, Double> score = new HashMap<>();
         somatoInfos.stream().forEach(e -> score.put(e.getTypeValue(), e.getPercent()));
-        if (testingDao.existsUserResult(userInfo.getPhone()) == 1)
-            testingDao.deleteUserResult(userInfo.getPhone());
-        testingDao.saveUserResult(id, score.get(YANGINSUFFICIENCY.name()), score.get(YINDEFICIENCY.name()), score.get(FAINTPHYSICAL.name()), score.get(PHLEGMDAMPNESS.name()), score.get(DAMPNESSHEAT.name()), score.get(BLOODSTASIS.name()), score.get(TEBING.name()), score.get(QISTAGNATION.name()), score.get(MILDPHYSICAL.name()), userInfo.getName(), userInfo.getPhone(), userInfo.getSex(), userInfo.getAge(), userInfo.getAddress());
+        if (testingDao.existsUserResult(userInfo.getOpenId()) == 1)
+            testingDao.deleteUserResult(userInfo.getOpenId());
+        testingDao.saveUserResult(id, score.get(YANGINSUFFICIENCY.name()), score.get(YINDEFICIENCY.name()), score.get(FAINTPHYSICAL.name()), score.get(PHLEGMDAMPNESS.name()), score.get(DAMPNESSHEAT.name()), score.get(BLOODSTASIS.name()), score.get(TEBING.name()), score.get(QISTAGNATION.name()), score.get(MILDPHYSICAL.name()), userInfo.getName(), userInfo.getPhone(), userInfo.getSex(), userInfo.getAge(), userInfo.getAddress(), userInfo.getOpenId());
 //        resultRecord.setTestResult(somatoInfos);
 //        resultRecord.setUserInfo(userInfo);
 //        resultRecord.setId();
@@ -406,9 +406,11 @@ public class TestingService {
             String analysis = null;
             if (anyAnalysis.isPresent())
                 analysis = anyAnalysis.get().getAnalysis();
-
+            if (testingDao.existsUserAnalyze(userInfo.getOpenId()) == 1) {
+                testingDao.deleteUserAnalyze(userInfo.getOpenId());
+            }
             //保存用户的解读数据determinationDeter
-            testingDao.saveUserAnalyze(userInfo.getPhone(),
+            testingDao.saveUserAnalyze(userInfo.getOpenId(),
                     determinationDeter.get(YANGINSUFFICIENCY).name(),
                     determinationDeter.get(YINDEFICIENCY).name(),
                     determinationDeter.get(FAINTPHYSICAL).name(),
@@ -430,9 +432,7 @@ public class TestingService {
             if (testingDao.existsUnAnalysisData(md5Code) == 0)
                 testingDao.saveUnAnalysisData(md5Code, determinationDeter.get(YANGINSUFFICIENCY), determinationDeter.get(YINDEFICIENCY), determinationDeter.get(FAINTPHYSICAL), determinationDeter.get(PHLEGMDAMPNESS), determinationDeter.get(DAMPNESSHEAT), determinationDeter.get(BLOODSTASIS), determinationDeter.get(TEBING), determinationDeter.get(QISTAGNATION), determinationDeter.get(MILDPHYSICAL));
         }
-        if (testingDao.existsUserAnalyze(userInfo.getPhone()) == 1) {
-            testingDao.deleteUserAnalyze(userInfo.getPhone());
-        }
+
         return resultRecord;
     }
 

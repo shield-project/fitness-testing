@@ -8,6 +8,7 @@ import lombok.Data;
  */
 @Data
 public class UserInfo {
+    private String openId;
     private String name;
     private String phone;
     private String sex;

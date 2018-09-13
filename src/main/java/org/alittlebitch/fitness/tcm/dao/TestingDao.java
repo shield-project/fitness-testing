@@ -28,10 +28,10 @@ public interface TestingDao {
     @Insert("insert into testing_question (question,somato_type) values (#{question},#{somatoType})")
     int saveQuestion(@Param("question") String question, @Param("somatoType") SomatoType somatoType);
 
-    @Insert("insert into testing_score_record (id,yanginsufficiency,yindeficiency,faintphysical,phlegmdampness,dampnessheat,bloodstasis,tebing,qistagnation,mildphysical,name,phone,sex,age,address,create_time) VALUES (#{id},#{yanginsufficiency},#{yindeficiency},#{faintphysical},#{phlegmdampness},#{dampnessheat},#{bloodstasis},#{tebing},#{qistagnation},#{mildphysical},#{name},#{phone},#{sex},#{age},#{address},SYSDATE());")
-    int saveUserResult(@Param("id") String id, @Param("yanginsufficiency") double yanginsufficiency, @Param("yindeficiency") double yindeficiency, @Param("faintphysical") double faintphysical, @Param("phlegmdampness") double phlegmdampness, @Param("dampnessheat") double dampnessheat, @Param("bloodstasis") double bloodstasis, @Param("tebing") double tebing, @Param("qistagnation") double qistagnation, @Param("mildphysical") double mildphysical, @Param("name") String name, @Param("phone") String phone, @Param("sex") String sex, @Param("age") int age, @Param("address") String address);
+    @Insert("insert into testing_score_record (id,yanginsufficiency,yindeficiency,faintphysical,phlegmdampness,dampnessheat,bloodstasis,tebing,qistagnation,mildphysical,name,phone,sex,age,address,create_time,open_id) VALUES (#{id},#{yanginsufficiency},#{yindeficiency},#{faintphysical},#{phlegmdampness},#{dampnessheat},#{bloodstasis},#{tebing},#{qistagnation},#{mildphysical},#{name},#{phone},#{sex},#{age},#{address},SYSDATE(),#{openId});")
+    int saveUserResult(@Param("id") String id, @Param("yanginsufficiency") double yanginsufficiency, @Param("yindeficiency") double yindeficiency, @Param("faintphysical") double faintphysical, @Param("phlegmdampness") double phlegmdampness, @Param("dampnessheat") double dampnessheat, @Param("bloodstasis") double bloodstasis, @Param("tebing") double tebing, @Param("qistagnation") double qistagnation, @Param("mildphysical") double mildphysical, @Param("name") String name, @Param("phone") String phone, @Param("sex") String sex, @Param("age") int age, @Param("address") String address, @Param("openId") String openId);
 
-    @Select("select id,yanginsufficiency,yindeficiency,faintphysical,phlegmdampness,dampnessheat,bloodstasis,tebing,qistagnation,mildphysical,name,phone,sex,age,address from testing_score_record where id = #{id};")
+    @Select("select id,yanginsufficiency,yindeficiency,faintphysical,phlegmdampness,dampnessheat,bloodstasis,tebing,qistagnation,mildphysical,name,phone,sex,age,address,open_id from testing_score_record where id = #{id};")
     Map<String, Object> queryResult(@Param("id") String id);
 
     @Select("select * from testing_analysis")
@@ -83,23 +83,23 @@ public interface TestingDao {
     @Select("${sql}")
     List<TcmUser> getTcmUser(@Param("sql") String sql);
 
-    @Insert("insert into testing_user_analysis (user_id,yanginsufficiency,yindeficiency,faintphysical,phlegmdampness,dampnessheat,bloodstasis,tebing,qistagnation,mildphysical,analysis) values (#{userId},#{yanginsufficiency},#{yindeficiency},#{faintphysical},#{phlegmdampness},#{dampnessheat},#{bloodstasis},#{tebing},#{qistagnation},#{mildphysical},#{analysis})")
-    int saveUserAnalyze(@Param("userId") String user_id, @Param("yanginsufficiency") String yanginsufficiency, @Param("yindeficiency") String yindeficiency, @Param("faintphysical") String faintphysical, @Param("phlegmdampness") String phlegmdampness, @Param("dampnessheat") String dampnessheat, @Param("bloodstasis") String bloodstasis, @Param("tebing") String tebing, @Param("qistagnation") String qistagnation, @Param("mildphysical") String mildphysical, @Param("analysis") String analysis);
+    @Insert("insert into testing_user_analysis (open_id,yanginsufficiency,yindeficiency,faintphysical,phlegmdampness,dampnessheat,bloodstasis,tebing,qistagnation,mildphysical,analysis) values (#{openId},#{yanginsufficiency},#{yindeficiency},#{faintphysical},#{phlegmdampness},#{dampnessheat},#{bloodstasis},#{tebing},#{qistagnation},#{mildphysical},#{analysis})")
+    int saveUserAnalyze(@Param("openId") String openId, @Param("yanginsufficiency") String yanginsufficiency, @Param("yindeficiency") String yindeficiency, @Param("faintphysical") String faintphysical, @Param("phlegmdampness") String phlegmdampness, @Param("dampnessheat") String dampnessheat, @Param("bloodstasis") String bloodstasis, @Param("tebing") String tebing, @Param("qistagnation") String qistagnation, @Param("mildphysical") String mildphysical, @Param("analysis") String analysis);
 
     @Select("select user_id,yanginsufficiency,yindeficiency,faintphysical,phlegmdampness,dampnessheat,bloodstasis,tebing,qistagnation,mildphysical,analysis from testing_user_analysis where user_id = #{userId}")
     Map<String, Object> queryUserAnalyze(String userId);
 
-    @Select("select count(0) from testing_user_analysis where user_id = #{phone}")
-    int existsUserAnalyze(@Param("phone") String phone);
+    @Select("select count(0) from testing_user_analysis where open_id = #{openId}")
+    int existsUserAnalyze(@Param("openId") String openId);
 
-    @Delete("delete from testing_user_analysis where user_id = #{phone}")
-    int deleteUserAnalyze(@Param("phone") String phone);
+    @Delete("delete from testing_user_analysis where open_id = #{openId}")
+    int deleteUserAnalyze(@Param("openId") String openId);
 
-    @Select("select count(0) from testing_score_record where phone = #{phone}")
-    int existsUserResult(@Param("phone") String phone);
+    @Select("select count(0) from testing_score_record where open_id = #{openId}")
+    int existsUserResult(@Param("openId") String openId);
 
-    @Delete("delete from testing_score_record where phone = #{phone}")
-    int deleteUserResult(@Param("phone") String phone);
+    @Delete("delete from testing_score_record where open_id = #{openId}")
+    int deleteUserResult(@Param("openId") String openId);
 
     @Select("${tcmUserSql}")
     int countTcmUser(@Param("tcmUserSql") String sql);

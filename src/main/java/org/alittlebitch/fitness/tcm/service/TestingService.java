@@ -250,6 +250,7 @@ public class TestingService {
         ResultRecord resultRecord = new ResultRecord();
         resultRecord.setId((String) resultRecordMap.get("id"));
         UserInfo userInfo = new UserInfo();
+        userInfo.setOpenId((String) resultRecordMap.get("open_id"));
         userInfo.setAddress((String) resultRecordMap.get("address"));
         userInfo.setAge((Integer) resultRecordMap.get("age"));
         userInfo.setName((String) resultRecordMap.get("name"));

@@ -83,7 +83,7 @@ public interface TestingDao {
     @Select("${sql}")
     List<TcmUser> getTcmUser(@Param("sql") String sql);
 
-    @Insert("insert into testing_user_analysis (open_id,yanginsufficiency,yindeficiency,faintphysical,phlegmdampness,dampnessheat,bloodstasis,tebing,qistagnation,mildphysical,analysis) values (#{openId},#{yanginsufficiency},#{yindeficiency},#{faintphysical},#{phlegmdampness},#{dampnessheat},#{bloodstasis},#{tebing},#{qistagnation},#{mildphysical},#{analysis})")
+    @Insert("insert into testing_user_analysis (user_id,yanginsufficiency,yindeficiency,faintphysical,phlegmdampness,dampnessheat,bloodstasis,tebing,qistagnation,mildphysical,analysis) values (#{openId},#{yanginsufficiency},#{yindeficiency},#{faintphysical},#{phlegmdampness},#{dampnessheat},#{bloodstasis},#{tebing},#{qistagnation},#{mildphysical},#{analysis})")
     int saveUserAnalyze(@Param("openId") String openId, @Param("yanginsufficiency") String yanginsufficiency, @Param("yindeficiency") String yindeficiency, @Param("faintphysical") String faintphysical, @Param("phlegmdampness") String phlegmdampness, @Param("dampnessheat") String dampnessheat, @Param("bloodstasis") String bloodstasis, @Param("tebing") String tebing, @Param("qistagnation") String qistagnation, @Param("mildphysical") String mildphysical, @Param("analysis") String analysis);
 
     @Select("select user_id,yanginsufficiency,yindeficiency,faintphysical,phlegmdampness,dampnessheat,bloodstasis,tebing,qistagnation,mildphysical,analysis from testing_user_analysis where user_id = #{userId}")

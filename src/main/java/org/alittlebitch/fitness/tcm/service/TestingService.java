@@ -246,6 +246,7 @@ public class TestingService {
 
     public Object result(String id) throws SystemException {
         Map<String, Object> resultRecordMap = testingDao.queryResult(id);
+        if (resultRecordMap == null) throw new RuntimeException("无数据");
         ResultRecord resultRecord = new ResultRecord();
         resultRecord.setId((String) resultRecordMap.get("id"));
         UserInfo userInfo = new UserInfo();

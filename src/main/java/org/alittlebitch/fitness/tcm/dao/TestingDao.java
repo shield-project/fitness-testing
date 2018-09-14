@@ -89,10 +89,10 @@ public interface TestingDao {
     @Select("select user_id,yanginsufficiency,yindeficiency,faintphysical,phlegmdampness,dampnessheat,bloodstasis,tebing,qistagnation,mildphysical,analysis from testing_user_analysis where user_id = #{userId}")
     Map<String, Object> queryUserAnalyze(String userId);
 
-    @Select("select count(0) from testing_user_analysis where open_id = #{openId}")
+    @Select("select count(0) from testing_user_analysis where user_id = #{openId}")
     int existsUserAnalyze(@Param("openId") String openId);
 
-    @Delete("delete from testing_user_analysis where open_id = #{openId}")
+    @Delete("delete from testing_user_analysis where user_id = #{openId}")
     int deleteUserAnalyze(@Param("openId") String openId);
 
     @Select("select count(0) from testing_score_record where open_id = #{openId}")

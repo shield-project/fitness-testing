@@ -60,12 +60,15 @@ public class UserContoller {
     private BaseResponse getWXUser(String resCode) throws IOException {
         if (StringUtils.isEmpty(resCode))
             throw new NullPointerException("resCode不能为空");
-        String url = "https://api.weixin.qq.com/sns/jscode2session?appid=wx80e4a55d9cbb6e95&secret=3527eb3d1c3417dfb6bc465e1596435f&js_code=" + resCode + "&grant_type=authorization_code";
+        String url = "https://api.weixin.qq.com/sns/jscode2session?appid=wx80e4a55d9cbb6e95&secret=08c56f64ad5b27773ed326c178de168a&js_code=" + resCode + "&grant_type=authorization_code";
         ResponseEntity<String> forEntity = restTemplate.getForEntity(url, String.class);
         String body = forEntity.getBody();
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode jsonNode = objectMapper.readTree(body);
-        String openid = jsonNode.asText("openid");
-        return ResponseBuilder.custom().data(openid).build();
+        if (!StringUtils.isEmpty(jsonNode.findValue("errcode")))
+            throw new RuntimeException("获取数据失败");
+        JsonNode openid = jsonNode.findValue("openid");
+        return ResponseBuilder.custom().data(openid.asText()).build();
     }
+
 }

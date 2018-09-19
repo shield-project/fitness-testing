@@ -289,21 +289,24 @@ public class TestingService {
                 biasedMap.entrySet().stream().forEach(e -> {
                     if (e.getValue() >= 40) {
                         String key = e.getKey();
-                        somatoInfos.stream().filter(b -> b.getTypeName().equalsIgnoreCase(key)).forEach(c -> c.setActive(true));
+                        somatoInfos.stream().filter(b -> b.getTypeName().equalsIgnoreCase(key)).forEach(c -> c.setDetermination(Determination.YES));
                     }
                 });
             } else {
                 if (!lte30.isEmpty() && mildPhysical.getPercent() >= 60)
-                    mildPhysical.setActive(true);
+                    mildPhysical.setDetermination(Determination.YES);
                 else if (!gte30.isEmpty() && mildPhysical.getPercent() >= 60) {
-                    mildPhysical.setActive(true);
-                    gte30.stream().forEach(e -> somatoInfos.stream().filter(s -> s.getTypeName().equals(e)).forEach(b -> b.setActive(true)));
+                    mildPhysical.setDetermination(Determination.MAYBE);
+                    gte30.stream().forEach(e -> somatoInfos.stream().filter(s -> s.getTypeName().equals(e)).forEach(b -> b.setDetermination(Determination.MAYBE)));
                 } else
-                    mildPhysical.setActive(false);
+                    mildPhysical.setDetermination(Determination.NO);
                 biasedMap.entrySet().stream().forEach(e -> {
-                    if (e.getValue() > 30) {
+                    if (e.getValue() > 30 && e.getValue() < 40) {
                         String key = e.getKey();
-                        somatoInfos.stream().filter(b -> b.getTypeName().equals(key)).forEach(c -> c.setActive(true));
+                        somatoInfos.stream().filter(b -> b.getTypeName().equals(key)).forEach(c -> c.setDetermination(Determination.MAYBE));
+                    } else if (e.getValue() >= 40) {
+                        String key = e.getKey();
+                        somatoInfos.stream().filter(b -> b.getTypeName().equals(key)).forEach(c -> c.setDetermination(Determination.YES));
                     }
                 });
             }

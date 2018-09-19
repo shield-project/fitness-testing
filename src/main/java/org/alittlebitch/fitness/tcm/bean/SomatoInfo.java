@@ -1,6 +1,7 @@
 package org.alittlebitch.fitness.tcm.bean;
 
 import lombok.Data;
+import org.alittlebitch.fitness.tcm.enums.Determination;
 
 /**
  * @author ShawnShoper
@@ -10,7 +11,7 @@ import lombok.Data;
 public class SomatoInfo {
     private String typeName;
     private String typeValue;
-    private boolean active;
+    private Determination determination = Determination.NO;
     private Double percent;
 
     public SomatoInfo(String typeName, String typeValue, Double percent) {

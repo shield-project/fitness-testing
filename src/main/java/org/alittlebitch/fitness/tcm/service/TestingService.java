@@ -15,6 +15,8 @@ import org.shoper.commons.core.SystemException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -256,15 +258,15 @@ public class TestingService {
         userInfo.setName((String) resultRecordMap.get("name"));
         userInfo.setPhone((String) resultRecordMap.get("phone"));
         userInfo.setSex((String) resultRecordMap.get("sex"));
-        Double yanginsufficiency = (Double) resultRecordMap.get("yanginsufficiency");
-        Double yindeficiency = (Double) resultRecordMap.get("yindeficiency");
-        Double faintphysical = (Double) resultRecordMap.get("faintphysical");
-        Double phlegmdampness = (Double) resultRecordMap.get("phlegmdampness");
-        Double dampnessheat = (Double) resultRecordMap.get("dampnessheat");
-        Double bloodstasis = (Double) resultRecordMap.get("bloodstasis");
-        Double tebing = (Double) resultRecordMap.get("tebing");
-        Double qistagnation = (Double) resultRecordMap.get("qistagnation");
-        Double mildphysical = (Double) resultRecordMap.get("mildphysical");
+        Double yanginsufficiency = new BigDecimal((Double) resultRecordMap.get("yanginsufficiency")).setScale(1, RoundingMode.FLOOR).doubleValue();
+        Double yindeficiency = new BigDecimal((Double) resultRecordMap.get("yindeficiency")).setScale(1, RoundingMode.FLOOR).doubleValue();
+        Double faintphysical = new BigDecimal((Double) resultRecordMap.get("faintphysical")).setScale(1, RoundingMode.FLOOR).doubleValue();
+        Double phlegmdampness =new BigDecimal( (Double) resultRecordMap.get("phlegmdampness")).setScale(1, RoundingMode.FLOOR).doubleValue();
+        Double dampnessheat = new BigDecimal((Double) resultRecordMap.get("dampnessheat")).setScale(1, RoundingMode.FLOOR).doubleValue();
+        Double bloodstasis = new BigDecimal((Double) resultRecordMap.get("bloodstasis")).setScale(1, RoundingMode.FLOOR).doubleValue();
+        Double tebing = new BigDecimal((Double) resultRecordMap.get("tebing")).setScale(1, RoundingMode.FLOOR).doubleValue();
+        Double qistagnation = new BigDecimal((Double) resultRecordMap.get("qistagnation")).setScale(1, RoundingMode.FLOOR).doubleValue();
+        Double mildphysical = new BigDecimal((Double) resultRecordMap.get("mildphysical")).setScale(1, RoundingMode.FLOOR).doubleValue();
         List<SomatoInfo> somatoInfos = new ArrayList<>(9);
         somatoInfos.add(new SomatoInfo(YANGINSUFFICIENCY.getTitle(), YANGINSUFFICIENCY.name(), yanginsufficiency));
         somatoInfos.add(new SomatoInfo(YINDEFICIENCY.getTitle(), YINDEFICIENCY.name(), yindeficiency));
